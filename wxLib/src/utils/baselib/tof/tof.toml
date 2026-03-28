@@ -1,0 +1,6 @@
+Sysid = "24322"
+Appkey = "7b8fb9b448734cc1ade53a259af47ef6"
+Nettype = "idc"
+Host = "api.tof.oss.com"
+Timeout = 1
+Ratelimit = 20

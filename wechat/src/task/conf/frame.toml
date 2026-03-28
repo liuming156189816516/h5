@@ -1,0 +1,6 @@
+RpcCallTimeout=10
+[Log]
+Level="dbg"
+TraceAllUid=true
+PrintMS=true
+PrintGid=true

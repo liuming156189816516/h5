@@ -1,0 +1,4 @@
+[Redis]
+Host = "rc.xxx.minigame.db"
+Port = 50007
+Passwd = "passwd"
