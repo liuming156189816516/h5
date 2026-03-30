@@ -31,7 +31,7 @@ func main() {
 	logs.SetLogFuncCallDepth(2)
 	logs.Async(1e3)
 
-	beego.BeeLogger.DelLogger("console")
+	//beego.BeeLogger.DelLogger("console")
 	logs.SetLogger(logs.AdapterFile, `{"filename":"./logs/task.log","separate":["debug","error"]}`)
 
 	//正式上线 需要屏蔽 debug 日志。。不然会被日志搞半死
