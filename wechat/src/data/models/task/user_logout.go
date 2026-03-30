@@ -40,8 +40,8 @@ func TaskTypeUserLogoutEventBackHandler(msg *natsRpc.NatsMsg) int32 {
 	if rsp.Code == 0 {
 		for _, accStr := range req.Account {
 			//下线成功
-			account.UpAccountInfo(bson.M{"account": accStr}, bson.M{"reason": "账号退出", "status": int64(1), "offline_time": time.Now().Unix()}, req.Uid)
-			cache.SetAccountStatus(req.Uid, accStr, 1)
+			account.UpAccountInfo(bson.M{"account": accStr}, bson.M{"reason": "账号退出", "status": int64(1), "offline_time": time.Now().Unix()})
+			cache.SetAccountStatus(accStr, 1)
 		}
 	}
 	return natsRpc.ESMR_SUCCEED

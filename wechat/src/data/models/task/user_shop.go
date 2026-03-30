@@ -38,10 +38,10 @@ func TaskTypeShopNameEventBackHandler(msg *natsRpc.NatsMsg) int32 {
 
 	if rsp.Code == 0 {
 		//成功
-		account.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"nick_name": req.NickName}, req.Uid)
-		accInfo := cache.GetAccountInfo(req.Uid, req.Account)
+		account.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"nick_name": req.NickName})
+		accInfo := cache.GetAccountInfo(req.Account)
 		accInfo.NickName = req.NickName
-		cache.SetAccountInfo(req.Uid, req.Account, accInfo)
+		cache.SetAccountInfo(req.Account, accInfo)
 	}
 	return natsRpc.ESMR_SUCCEED
 }

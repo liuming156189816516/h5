@@ -38,8 +38,8 @@ func TaskUserLoginEventBackHandler(msg *natsRpc.NatsMsg) int32 {
 	if rsp.Code != 0 {
 		//失败
 		for _, accStr := range req.Account {
-			account.UpAccountInfo(bson.M{"account": accStr}, bson.M{"status": int64(4), "reason": rsp.Message}, req.Uid)
-			cache.SetAccountStatus(req.Uid, accStr, 4)
+			account.UpAccountInfo(bson.M{"account": accStr}, bson.M{"status": int64(4), "reason": rsp.Message})
+			cache.SetAccountStatus(accStr, 4)
 		}
 	}
 	return natsRpc.ESMR_SUCCEED

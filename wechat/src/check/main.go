@@ -1,17 +1,9 @@
 package main
 
 import (
-	"check/models/aiMessage"
-	"check/models/aiMessageWs"
-	"check/models/clear"
-	"check/models/duration"
-	"check/models/group"
 	"check/models/ip"
 	"check/models/qrcode"
 	"check/models/sendmsg"
-	"check/models/settlement"
-	"check/models/statis"
-	"check/models/withdraw"
 	"comm/mgoDeal"
 	"comm/redisDeal"
 	"github.com/astaxie/beego"
@@ -94,16 +86,8 @@ func main() {
 
 	go qrcode.TaskRun()
 	go sendmsg.TaskRun()
-	go settlement.TaskRun()
-	go group.TaskRun()
-	go withdraw.TaskRun()
-	go statis.TaskRun()
-	go clear.TaskRun()
-	go aiMessage.TaskRun()
-	go aiMessageWs.TaskRun()
 	go ip.TaskRun()
-	go duration.TaskRun()
-	//go vps.TaskRun()
+
 	//启动服务器
 	l.Println("start check")
 	beego.Run()

@@ -195,10 +195,6 @@ func (this *AccountServer) GetAccountInfoList(req *info.GetAccountInfoListReq, r
 		}
 		if p, ok := data["platform_type"]; ok {
 			tmp.PlatformType = utils.GetInt64(p)
-			if tmp.PlatformType == 2 {
-				duration := cache.GetAccountDuration(tmp.Account)
-				tmp.TotalTime = utils.Second2days(duration.TotalTime)
-			}
 		}
 		if p, ok := data["itime"]; ok {
 			tmp.Itime = utils.GetInt64(p)

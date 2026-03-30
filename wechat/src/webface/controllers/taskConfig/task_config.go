@@ -55,25 +55,3 @@ func (this *TaskConfigController) DoTaskConfigInfo() {
 	}
 	this.JsonResult(goError.SuccRsp, rsp)
 }
-
-// 获取营销分组
-func (this *TaskConfigController) GetMarketGroupList() {
-	req := &info.GetMarketGroupListReq{}
-	if len(this.Ctx.Input.RequestBody) != 0 {
-		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
-		if err != nil {
-			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
-			return
-		}
-	}
-	member := &taskConfig.TaskConfigServer{
-		Sess: this.Sess,
-	}
-	rsp := &info.GetMarketGroupListRsp{}
-	erro := member.GetMarketGroupList(req, rsp)
-	if erro != nil {
-		this.JsonResult(erro, nil)
-		return
-	}
-	this.JsonResult(goError.SuccRsp, rsp)
-}

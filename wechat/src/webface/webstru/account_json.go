@@ -61,8 +61,6 @@ type GetAccountInfoListInfo struct {
 	PlatformType   int64  `json:"platform_type"`    //平台类型 1-云控 2-APP
 	Itime          int64  `json:"itime"`            //入库时间
 	FuserName      string `json:"fuser_name"`       //上级用户
-	TotalTime      string `json:"total_time"`       //时长
-	IsProxyUser    int64  `json:"is_proxy_user"`    //是否反向代理账号 0-否 1-是
 }
 
 type DoUpRemarkReq struct {
