@@ -28,7 +28,6 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 	db := comm.GetUserMgoDBName(uid)
 	tb := tableName.GetTableSendMsgInfoListInfo()
 	where := bson.M{}
-	where["task_id"] = req.TaskId
 	if req.Account != "" {
 		where["account"] = req.Account
 	}
@@ -36,9 +35,6 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 		where["account_status"] = req.AccountStatus
 	}
 	sort := "itime"
-	if req.Sort != "" {
-		sort = req.Sort
-	}
 	rsp.List = []*info.GetSendMsgInfoListInfo{}
 	rsp.Total, _ = mgoDeal.QueryMongoCount(db, tb, where)
 	if rsp.Total == 0 {
@@ -74,7 +70,7 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 	}
 
 	go func() {
-		msgInfoList := sendmsg.GetListSendMsgInfo(bson.M{"task_id": req.TaskId}, -1)
+		msgInfoList := sendmsg.GetListSendMsgInfo(bson.M{}, -1)
 		for _, msgInfo := range msgInfoList {
 			accountStatus := cache.GetAccountStatus(msgInfo.Account)
 			if accountStatus != 2 {
