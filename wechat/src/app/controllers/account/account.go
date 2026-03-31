@@ -56,8 +56,8 @@ func (this *AccountController) LoginAccount() {
 	this.JsonResult(goError.SuccRsp, rsp)
 }
 
-// 获取ws列表
-func (this *AccountController) GetAccountList() {
+// 获取ws结果
+func (this *AccountController) GetAccountResult() {
 	req := &info.GetAccountResultReq{}
 	if len(this.Ctx.Input.RequestBody) != 0 {
 		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, req)
