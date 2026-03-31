@@ -33,6 +33,7 @@ func (this *AdminServer) GetAdminUserList(req *info.GetAdminUserListReq, rsp *in
 	db := comm.GetMgoDBName()
 	tb := tableName.GetTableAdminUserInfo()
 	where := bson.M{}
+	where["creator"] = this.Sess.Uid
 	if req.Account != "" {
 		where["account"] = req.Account
 	}
