@@ -47,7 +47,7 @@ func (this *AccountController) LoginAccount() {
 	member := &account.AccountServer{
 		Sess: this.Sess,
 	}
-	rsp := &info.LoginAccountRsp{}
+	rsp := &info.NullRsp{}
 	erro := member.LoginAccount(req, rsp)
 	if erro != nil {
 		this.JsonResult(erro, nil)

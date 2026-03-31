@@ -27,7 +27,7 @@ func (this *AccountServer) GetQrCode(req *info.NullReq, rsp *info.GetQrCodeRsp) 
 }
 
 // 账号登录
-func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.LoginAccountRsp) *goError.ErrRsp {
+func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.NullRsp) *goError.ErrRsp {
 	tmpProxy := &cache.AccountSocks5Info{}
 	lockIpId := ""
 	//获取ip
