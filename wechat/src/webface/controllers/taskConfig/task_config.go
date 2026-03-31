@@ -14,7 +14,7 @@ type TaskConfigController struct {
 
 // 任务配置-获取
 func (this *TaskConfigController) GetTaskConfigInfo() {
-	req := &info.GetTaskConfigInfoReq{}
+	req := &info.NullReq{}
 	if len(this.Ctx.Input.RequestBody) != 0 {
 		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
 		if err != nil {
