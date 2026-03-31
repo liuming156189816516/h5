@@ -177,7 +177,8 @@ func GroupInfo(param *info.GroupInfoParam) *info.ResponseResult {
 
 // 创建关联的验证码
 func VfcodeCreate(param *info.VfcodeCreateParam) *info.ResponseResult {
-	logs.Info("VfcodeCreate param:", param)
+	paramStr, _ := jsoniter.MarshalToString(param)
+	logs.Info("VfcodeCreate param:", paramStr)
 	//info.SaveLogs(param.Account, "VfcodeCreate-入参", param)
 	ret := NrpcDllCallDll("/vfcode/create", beego.AppConfig.String("dll_mod"), param, 10)
 	toString, _ := jsoniter.MarshalToString(ret)
