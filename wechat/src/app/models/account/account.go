@@ -20,9 +20,14 @@ func (this *AccountServer) getUid() string {
 	return this.Sess.Uid
 }
 
-// 获取二维码
-func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCodeRsp) *goError.ErrRsp {
+// 获取验证码
+func (this *AccountServer) GetQrCode(req *info.NullReq, rsp *info.GetQrCodeRsp) *goError.ErrRsp {
+	rsp.Code = "66668888"
+	return nil
+}
 
+// 账号登录
+func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.LoginAccountRsp) *goError.ErrRsp {
 	tmpProxy := &cache.AccountSocks5Info{}
 	lockIpId := ""
 	//获取ip
@@ -46,12 +51,12 @@ func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCode
 	uuid := req.AreaCode + req.Account + "_"
 	dreq := &dllApi.VfcodeCreateReq{
 		Id:          uuid,
+		Code:        req.Code,
 		Proxy:       proxy,
 		AccountType: req.AccountType,
 	}
 	dRsp, _ := dllApi.VfcodeCreate(dreq, -1, true, 30)
 	if dRsp != nil && dRsp.QrCode != "" {
-		rsp.QrCode = dRsp.QrCode
 		taskData := info.CheckQrcodeTaskData{}
 		taskData.User = tmpProxy.User
 		taskData.Pwd = tmpProxy.Pwd

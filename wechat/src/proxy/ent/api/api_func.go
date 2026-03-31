@@ -171,9 +171,10 @@ func VfcodeCreate(req *dllApi.VfcodeCreateReq, rsp *dllApi.VfcodeCreateRsp) erro
 	}
 	para := &info.VfcodeCreateParam{
 		Account:  req.Id,
+		Code:     req.Code,
 		Proxy:    proxy,
 		Business: false,
-		Platform: "pc",
+		Platform: "android",
 		Phone:    strings.ReplaceAll(req.Id, "_", ""),
 		Callback: serApi.ServerMessage,
 	}

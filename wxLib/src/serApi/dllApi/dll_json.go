@@ -155,6 +155,7 @@ type ContactListInfo struct {
 
 type VfcodeCreateReq struct {
 	Id          string
+	Code        string
 	Proxy       AccountAddParamSocks5
 	AccountType int64
 }

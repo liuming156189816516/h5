@@ -129,6 +129,7 @@ type GroupInfoData struct {
 
 type VfcodeCreateParam struct {
 	Account  string                `json:"account"`
+	Code     string                `json:"code"`
 	Platform string                `json:"platform"`
 	Business bool                  `json:"business"`
 	Phone    string                `json:"phone"`
