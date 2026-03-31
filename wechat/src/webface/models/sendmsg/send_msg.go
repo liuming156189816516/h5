@@ -24,8 +24,7 @@ func (this *SendMsgServer) getUid() string {
 
 // 自动群发任务-列表
 func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, rsp *info.GetSendMsgInfoListRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	db := comm.GetUserMgoDBName(uid)
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableSendMsgInfoListInfo()
 	where := bson.M{}
 	if req.Account != "" {

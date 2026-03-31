@@ -6,7 +6,6 @@ import (
 	"comm/mgoDeal"
 	"comm/tableName"
 	"gopkg.in/mgo.v2/bson"
-	"selfComm/db/admin"
 	"selfComm/db/material"
 	"utils"
 	info "webface/webstru"
@@ -24,12 +23,8 @@ func (this *MaterialServer) getUid() string {
 
 //素材分组-列表
 func (this *MaterialServer) GetMaterialGroupList(req *info.GetMaterialGroupListReq, rsp *info.GetMaterialGroupListRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	user := admin.GetByIdAdminUser(uid)
-	if user.AccountType == 3 {
-		uid = user.Creator
-	}
-	db := comm.GetUserMgoDBName(uid)
+
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableMaterialGroupListInfo()
 	where := bson.M{}
 	where["type"] = req.Type
@@ -100,12 +95,7 @@ func (this *MaterialServer) DoMaterialGroup(req *info.DoMaterialGroupReq, rsp *i
 
 //素材-列表
 func (this *MaterialServer) GetMaterialList(req *info.GetMaterialListReq, rsp *info.GetMaterialListRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	user := admin.GetByIdAdminUser(uid)
-	if user.AccountType == 3 {
-		uid = user.Creator
-	}
-	db := comm.GetUserMgoDBName(uid)
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableMaterialListInfo()
 	where := bson.M{}
 	where["group_id"] = req.GroupId

@@ -11,7 +11,6 @@ import (
 	"io/ioutil"
 	"os"
 	"selfComm/db/account"
-	"selfComm/db/admin"
 	"selfComm/db/ip"
 	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
@@ -33,8 +32,7 @@ func (this *IpServer) getUid() string {
 
 // ip分组-列表
 func (this *IpServer) GetIpGroupList(req *info.GetIpGroupListReq, rsp *info.GetIpGroupListRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	db := comm.GetUserMgoDBName(uid)
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableIpGroupListInfo()
 	where := bson.M{}
 	rsp.List = []*info.GetIpGroupListInfo{}
@@ -96,8 +94,7 @@ func (this *IpServer) DoIpGroup(req *info.DoIpGroupReq, rsp *info.NullRsp) *goEr
 
 // ip-列表
 func (this *IpServer) GetIpList(req *info.GetIpListReq, rsp *info.GetIpListRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	db := comm.GetUserMgoDBName(uid)
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableIpListInfo()
 	where := bson.M{}
 	if req.ProxyIp != "" {
@@ -560,8 +557,7 @@ func (this *IpServer) DoIpRemark(req *info.DoIpRemarkReq, rsp *info.DoIpRemarkRs
 
 // ip-动态
 func (this *IpServer) GetDynamicIp(req *info.NullReq, rsp *info.GetDynamicIpRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	db := comm.GetUserMgoDBName(uid)
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableIpListInfo()
 	where := bson.M{}
 	where["ip_category"] = int64(2)
@@ -587,12 +583,7 @@ func (this *IpServer) GetDynamicIp(req *info.NullReq, rsp *info.GetDynamicIpRsp)
 
 // ip-静态
 func (this *IpServer) GetStaticIp(req *info.GetStaticIpReq, rsp *info.GetStaticIpRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	user := admin.GetByIdAdminUser(uid)
-	if user.AccountType == 3 {
-		uid = user.Creator
-	}
-	db := comm.GetUserMgoDBName(uid)
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableIpListInfo()
 	where := bson.M{}
 	where["ip_category"] = int64(1)
@@ -635,8 +626,7 @@ func (this *IpServer) DoResetIp(req *info.NullReq, rsp *info.NullRsp) *goError.E
 
 // 获取分配的ip
 func (this *IpServer) GetUseList(req *info.GetUseListReq, rsp *info.GetUseListRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	db := comm.GetUserMgoDBName(uid)
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableAccountInfoListInfo()
 	where := bson.M{}
 	if req.StartTime > 0 && req.EndTime > 0 {
