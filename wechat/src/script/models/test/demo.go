@@ -3,6 +3,8 @@ package test
 import (
 	"comm/comm"
 	"comm/goError"
+	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
 	"selfComm/db/ip"
@@ -39,5 +41,8 @@ func (this *DemoServer) Demo(req1 *info.DemoReq, rsp *info.DemoRsp) *goError.Err
 	tmpIp.Country = "美国"
 	tmpIp.DisableStatus = 1
 	ip.AddIp(tmpIp)
+	lockIp := ip.GetOneLockIp()
+	toString, _ := jsoniter.MarshalToString(lockIp)
+	fmt.Println("测试ip", toString)
 	return nil
 }
