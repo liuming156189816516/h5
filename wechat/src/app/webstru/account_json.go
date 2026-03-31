@@ -33,9 +33,8 @@ type CheckQrcodeTaskData struct {
 }
 
 type GetAccountResultReq struct {
-	AccountType int64  `json:"account_type"` //账号类型 1-个人号 2-商业号
-	Account     string `json:"account"`      //账号
-	AreaCode    string `json:"area_code"`    //区号
+	Account  string `json:"account"`   //账号
+	AreaCode string `json:"area_code"` //区号
 }
 
 type GetAccountResultRsp struct {
