@@ -19,7 +19,7 @@ func (this *TaskConfigServer) getUid() string {
 }
 
 // 任务配置-获取
-func (this *TaskConfigServer) GetTaskConfigInfo(req *info.GetTaskConfigInfoReq, rsp *info.GetTaskConfigInfoRsp) *goError.ErrRsp {
+func (this *TaskConfigServer) GetTaskConfigInfo(req *info.NullReq, rsp *info.GetTaskConfigInfoRsp) *goError.ErrRsp {
 	config := cache.GetTaskConfig("global")
 	rsp.MaterialList = config.MaterialList
 	rsp.DataPackId = config.DataPackId
