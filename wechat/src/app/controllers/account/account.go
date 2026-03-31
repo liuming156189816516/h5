@@ -38,7 +38,7 @@ func (this *AccountController) GetQrCode() {
 func (this *AccountController) LoginAccount() {
 	req := &info.LoginAccountReq{}
 	if len(this.Ctx.Input.RequestBody) != 0 {
-		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, req)
 		if err != nil {
 			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
 			return
@@ -60,7 +60,7 @@ func (this *AccountController) LoginAccount() {
 func (this *AccountController) GetAccountList() {
 	req := &info.GetAccountResultReq{}
 	if len(this.Ctx.Input.RequestBody) != 0 {
-		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, req)
 		if err != nil {
 			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
 			return
