@@ -10,9 +10,7 @@ import (
 	"comm/token"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
-	"selfComm/db/account"
 	"selfComm/db/admin"
-	"selfComm/db/material"
 	"sort"
 	"time"
 	"utils"
@@ -93,9 +91,6 @@ func (this *AdminServer) DoAdminUser(req *info.DoAdminUserReq, rsp *info.NullRsp
 		tmp.PwdStr = req.PwdStr
 		tmp.TwoPwd = req.TwoPwd
 		admin.AddAdminUser(tmp)
-		if tmp.AccountType == 2 {
-			go initAccount(tmp.Id.Hex())
-		}
 	}
 	if req.Ptype == 2 {
 		//编辑
@@ -121,27 +116,6 @@ func (this *AdminServer) DoAdminUser(req *info.DoAdminUserReq, rsp *info.NullRsp
 		admin.UpAdminUser(where, update)
 	}
 	return nil
-}
-
-// 初始化数据
-func initAccount(uid string) {
-	//初始化素材分组
-	for i := 1; i < 7; i++ {
-		if i == 5 || i == 6 {
-			continue
-		}
-		tmp := &material.MaterialGroup{}
-		tmp.Id = bson.NewObjectId()
-		tmp.Name = "未分组"
-		tmp.Type = int64(i)
-		material.AddMaterialGroup(tmp)
-	}
-	tmp2 := &account.AccountGroup{}
-	tmp2.Id = bson.NewObjectId()
-	tmp2.Name = "未分组"
-	tmp2.Sort = 0 - time.Now().Unix()
-	account.AddAccountGroup(tmp2)
-
 }
 
 // 登录
