@@ -4,6 +4,7 @@ import (
 	"comm/comm"
 	"comm/goError"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
 	"selfComm/db/sendmsg"
@@ -20,7 +21,8 @@ func (this *DemoServer) getUid() string {
 }
 
 func (this *DemoServer) Demo(req1 *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
-	msgInfo := sendmsg.GetCountSendMsgInfo(bson.M{})
-	fmt.Println(msgInfo)
+	msgInfo := sendmsg.GetListSendMsgInfo(bson.M{}, -1)
+	toString, _ := jsoniter.MarshalToString(msgInfo)
+	fmt.Println(toString)
 	return nil
 }
