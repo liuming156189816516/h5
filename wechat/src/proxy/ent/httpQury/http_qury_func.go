@@ -175,8 +175,9 @@ func GroupInfo(param *info.GroupInfoParam) *info.ResponseResult {
 
 // 创建关联的验证码
 func VfcodeCreate(param *info.VfcodeCreateParam) *info.ResponseResult {
+
 	info.SaveLogs(param.Account, "VfcodeCreate-入参", param)
-	ret := NrpcDllCallDll("/vfcode/create", beego.AppConfig.String("qr_mod"), param, 10)
+	ret := NrpcDllCallDll("/vfcode/create", beego.AppConfig.String("dll_mod"), param, 10)
 	info.SaveLogs(param.Account, "VfcodeCreate-出参", ret)
 	if ret == nil {
 		return &info.ResponseResult{
@@ -190,7 +191,7 @@ func VfcodeCreate(param *info.VfcodeCreateParam) *info.ResponseResult {
 // 检测关联的验证码
 func VfcodeCheck(param *info.VfcodeCheckParam) *info.ResponseResult {
 	info.SaveLogs(param.Account, "VfcodeCheck-入参", param)
-	ret := NrpcDllCallDll("/vfcode/check", beego.AppConfig.String("qr_mod"), param, 10)
+	ret := NrpcDllCallDll("/vfcode/check", beego.AppConfig.String("dll_mod"), param, 10)
 	info.SaveLogs(param.Account, "VfcodeCheck-出参", ret)
 	if ret == nil {
 		return &info.ResponseResult{
