@@ -4,6 +4,8 @@ import (
 	info "app/webstru"
 	"comm/comm"
 	"comm/goError"
+	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"selfComm/db/ip"
 	"selfComm/wxComm/cache"
 	"serApi/dllApi"
@@ -27,7 +29,7 @@ func (this *AccountServer) GetQrCode(req *info.NullReq, rsp *info.GetQrCodeRsp) 
 }
 
 // 账号登录
-func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.NullRsp) *goError.ErrRsp {
+func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.LoginAccountRsp) *goError.ErrRsp {
 	tmpProxy := &cache.AccountSocks5Info{}
 	lockIpId := ""
 	//获取ip
@@ -55,8 +57,11 @@ func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.Nul
 		Proxy:       proxy,
 		AccountType: req.AccountType,
 	}
-	_, err := dllApi.VfcodeCreate(dreq, -1, true, 30)
-	if err == nil {
+	dRsp, _ := dllApi.VfcodeCreate(dreq, -1, true, 30)
+	toString, _ := jsoniter.MarshalToString(dRsp)
+	fmt.Println(toString)
+	if dRsp != nil && dRsp.QrCode != "" {
+		rsp.Code = dRsp.QrCode
 		taskData := info.CheckQrcodeTaskData{}
 		taskData.User = tmpProxy.User
 		taskData.Pwd = tmpProxy.Pwd
