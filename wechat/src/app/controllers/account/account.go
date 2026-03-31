@@ -14,7 +14,7 @@ type AccountController struct {
 
 // 获取二维码
 func (this *AccountController) GetQrCode() {
-	req := &info.GetQrCodeReq{}
+	req := &info.NullReq{}
 	if len(this.Ctx.Input.RequestBody) != 0 {
 		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
 		if err != nil {
@@ -27,6 +27,28 @@ func (this *AccountController) GetQrCode() {
 	}
 	rsp := &info.GetQrCodeRsp{}
 	erro := member.GetQrCode(req, rsp)
+	if erro != nil {
+		this.JsonResult(erro, nil)
+		return
+	}
+	this.JsonResult(goError.SuccRsp, rsp)
+}
+
+// 账号登录
+func (this *AccountController) LoginAccount() {
+	req := &info.LoginAccountReq{}
+	if len(this.Ctx.Input.RequestBody) != 0 {
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		if err != nil {
+			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+			return
+		}
+	}
+	member := &account.AccountServer{
+		Sess: this.Sess,
+	}
+	rsp := &info.LoginAccountRsp{}
+	erro := member.LoginAccount(req, rsp)
 	if erro != nil {
 		this.JsonResult(erro, nil)
 		return
