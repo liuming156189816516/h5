@@ -167,27 +167,29 @@ func (this *DataPackServer) UpLoadFile(fileContent string, req *info.UpLoadFileR
 			repeatNum := int64(0)
 			var args []interface{}
 			for _, phoneStr := range phoneList {
-				if strings.Contains(phoneStr, ",") {
-					phoneStrNew := strings.ReplaceAll(phoneStr, ",", "")
-					toInt64 := utils.StrToInt64(phoneStrNew)
-					if toInt64 <= 0 {
+				if !strings.Contains(phoneStr, "-") {
+					if strings.Contains(phoneStr, ",") {
+						phoneStrNew := strings.ReplaceAll(phoneStr, ",", "")
+						toInt64 := utils.StrToInt64(phoneStrNew)
+						if toInt64 <= 0 {
+							invalidNum++
+							continue
+						}
+					} else {
+						toInt64 := utils.StrToInt64(phoneStr)
+						if toInt64 <= 0 {
+							invalidNum++
+							continue
+						}
+					}
+					if wxComm.IsChain(phoneStr) {
 						invalidNum++
 						continue
 					}
-				} else {
-					toInt64 := utils.StrToInt64(phoneStr)
-					if toInt64 <= 0 {
-						invalidNum++
+					if _, ok := map2[phoneStr]; ok {
+						repeatNum++
 						continue
 					}
-				}
-				if wxComm.IsChain(phoneStr) {
-					invalidNum++
-					continue
-				}
-				if _, ok := map2[phoneStr]; ok {
-					repeatNum++
-					continue
 				}
 				args = append(args, phoneStr)
 			}
