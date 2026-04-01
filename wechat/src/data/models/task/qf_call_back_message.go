@@ -28,16 +28,16 @@ func AccountMessageCallBackEventHandler(msg *natsRpc.NatsMsg) int32 {
 
 	target := req.From
 	if req.FromType == 1 {
-		target = cache.GetSendMsgPhoneLid(target)
+		target = cache.GetSendMsgPhoneLid(req.Account, target)
 	}
 	lock.Lock()
 	defer lock.Unlock()
-	record := cache.GetSendMsgRecordInfo(req.Account + "_" + target)
+	record := cache.GetSendMsgRecordInfo(req.Account, req.Account+"_"+target)
 	if req.Type == "notify" && req.Ctype == "receipt" && req.Read == false {
 		//已送达
 		if record.IsArrived == 0 {
 			record.IsArrived = 1
-			cache.IncSendMsgTaskInfoCount(cache.ArrivedNum, record.Account, record.Account, 1)
+			cache.IncSendMsgTaskInfoCount(cache.ArrivedNum, record.Account, 1)
 		}
 	}
 	cache.SetSendMsgRecord(record)

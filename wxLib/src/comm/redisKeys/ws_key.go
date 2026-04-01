@@ -134,13 +134,13 @@ func GetAccountDurationKey() string {
 }
 
 //发消消息明细
-func GetSendMsgTaskInfoKey() string {
-	return fmt.Sprintf("%s_send_msg_task_info_key", comm.GetMgoDBName())
+func GetSendMsgTaskInfoKey(account string) string {
+	return fmt.Sprintf("%s_send_msg_task_info_key", comm.GetUserMgoDBName(account))
 }
 
 //发消消息phone-lid
-func GetSendMsgPhoneLidKey() string {
-	return fmt.Sprintf("%s_send_msg_phone_lid_key", comm.GetMgoDBName())
+func GetSendMsgPhoneLidKey(account string) string {
+	return fmt.Sprintf("%s_send_msg_phone_lid_key", comm.GetUserMgoDBName(account))
 }
 
 //acc_target对应的taskid

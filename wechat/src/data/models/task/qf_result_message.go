@@ -33,10 +33,10 @@ func AccountMessageResultEventHandler(msg *natsRpc.NatsMsg) int32 {
 		target = split[0]
 	}
 
-	record := cache.GetSendMsgRecordInfo(req.Account + "_" + target)
+	record := cache.GetSendMsgRecordInfo(req.Account, req.Account+"_"+target)
 	if tmpData.Errno == 0 && tmpData.Data != "" {
 		//成功
-		cache.IncSendMsgTaskInfoCount(cache.SuccessNum, record.Account, record.Account, 1)
+		cache.IncSendMsgTaskInfoCount(cache.SuccessNum, record.Account, 1)
 	} else {
 		//把数据还回去
 		if record.DataPackId != "" {

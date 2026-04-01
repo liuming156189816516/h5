@@ -65,6 +65,12 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 		if p, ok := data["reason"]; ok {
 			tmp.Reason = utils.GetString(p)
 		}
+		if p, ok := data["itime"]; ok {
+			tmp.Itime = utils.GetInt64(p)
+		}
+		if p, ok := data["ptime"]; ok {
+			tmp.Ptime = utils.GetInt64(p)
+		}
 		rsp.List = append(rsp.List, tmp)
 	}
 
@@ -79,12 +85,12 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 			if msgInfo.AccountStatus != accountStatus {
 				up["account_status"] = accountStatus
 			}
-			count := cache.GetSendMsgTaskInfoCount(cache.SuccessNum, msgInfo.Account, msgInfo.Account)
+			count := cache.GetSendMsgTaskInfoCount(cache.SuccessNum, msgInfo.Account)
 			if msgInfo.SucessNum != count {
 				up["sucess_num"] = count
 			}
 
-			count10 := cache.GetSendMsgTaskInfoCount(cache.ArrivedNum, msgInfo.Account, msgInfo.Account)
+			count10 := cache.GetSendMsgTaskInfoCount(cache.ArrivedNum, msgInfo.Account)
 			up["arrived_num"] = count10
 
 			if len(up) > 0 {

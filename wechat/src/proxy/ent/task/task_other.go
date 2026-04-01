@@ -209,7 +209,7 @@ func TaskTypeSendMsgEventHandler(msg *natsRpc.NatsMsg) int32 {
 			tmp.MaterialList = mList
 			tmp.MaterialType = material.Type
 			cache.SetSendMsgRecord(&tmp)
-			cache.SetSendMsgPhoneLid(tmp.Target, tmp.Lid)
+			cache.SetSendMsgPhoneLid(tmp.Account, tmp.Target, tmp.Lid)
 		}
 	}
 	if ret.Code == 0 {

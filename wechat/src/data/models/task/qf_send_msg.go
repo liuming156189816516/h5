@@ -43,7 +43,7 @@ func TaskTypeSendMsgEventBackHandler(msg *natsRpc.NatsMsg) int32 {
 
 	if rsp.Code != 0 && req.Account != "" {
 		//失败
-		record := cache.GetSendMsgRecordInfo(req.Account + "_" + req.Target)
+		record := cache.GetSendMsgRecordInfo(req.Account, req.Account+"_"+req.Target)
 		//把数据还回去
 		if record.DataPackId != "" {
 			target := req.Target

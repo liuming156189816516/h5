@@ -95,47 +95,35 @@ func DelProxyIp(acc string) {
 // =================================================
 // 群发任务明细
 func SetSendMsgRecord(tmp *SendMsgRecord) {
-	redisDeal.RedisDoHSet(redisKeys.GetSendMsgTaskInfoKey(), tmp.RecordId, tmp)
-}
-
-// 群发任务明细
-func GetSendMsgRecord() []*SendMsgRecord {
-	tmpList := []*SendMsgRecord{}
-	allTask := redisDeal.RedisDoHGetAll(redisKeys.GetSendMsgTaskInfoKey())
-	for _, v := range allTask {
-		tmp := &SendMsgRecord{}
-		jsoniter.UnmarshalFromString(v, &tmp)
-		tmpList = append(tmpList, tmp)
-	}
-	return tmpList
+	redisDeal.RedisDoHSet(redisKeys.GetSendMsgTaskInfoKey(tmp.Account), tmp.RecordId, tmp)
 }
 
 // 群发任务明细详情
-func GetSendMsgRecordInfo(recordId string) *SendMsgRecord {
+func GetSendMsgRecordInfo(account, recordId string) *SendMsgRecord {
 	tmp := &SendMsgRecord{}
-	v := redisDeal.RedisDoHGetSrt(redisKeys.GetSendMsgTaskInfoKey(), recordId)
+	v := redisDeal.RedisDoHGetSrt(redisKeys.GetSendMsgTaskInfoKey(account), recordId)
 	jsoniter.UnmarshalFromString(v, &tmp)
 	return tmp
 }
 
 // 群发任务详情
-func DelSendMsgRecordInfo() {
-	redisDeal.RedisSendDel(redisKeys.GetSendMsgTaskInfoKey())
+func DelSendMsgRecordInfo(account string) {
+	redisDeal.RedisSendDel(redisKeys.GetSendMsgTaskInfoKey(account))
 }
 
 // =================================================
 // 群发任务phone-lid
-func SetSendMsgPhoneLid(phone, lid string) {
-	redisDeal.RedisDoHSet(redisKeys.GetSendMsgPhoneLidKey(), phone, lid)
+func SetSendMsgPhoneLid(account, phone, lid string) {
+	redisDeal.RedisDoHSet(redisKeys.GetSendMsgPhoneLidKey(account), phone, lid)
 }
 
-func GetSendMsgPhoneLid(phone string) string {
-	srt := redisDeal.RedisDoHGetSrt(redisKeys.GetSendMsgPhoneLidKey(), phone)
+func GetSendMsgPhoneLid(account, phone string) string {
+	srt := redisDeal.RedisDoHGetSrt(redisKeys.GetSendMsgPhoneLidKey(account), phone)
 	return srt
 }
 
-func DelSendMsgPhoneLid() {
-	redisDeal.RedisSendDel(redisKeys.GetSendMsgPhoneLidKey())
+func DelSendMsgPhoneLid(account string) {
+	redisDeal.RedisSendDel(redisKeys.GetSendMsgPhoneLidKey(account))
 }
 
 // ================================================================
@@ -147,13 +135,13 @@ const (
 
 // ================================================================
 // 群发任务明细统计
-func IncSendMsgTaskInfoCount(countType, taskId, account string, num int64) int64 {
-	hincrby, _ := redisDeal.RedisDoHincrby(redisKeys.GetSendMsgTaskInfoCountKey(), countType+"_"+taskId+"_"+account, num)
+func IncSendMsgTaskInfoCount(countType, account string, num int64) int64 {
+	hincrby, _ := redisDeal.RedisDoHincrby(redisKeys.GetSendMsgTaskInfoCountKey(), countType+"_"+account, num)
 	return hincrby
 }
 
-func GetSendMsgTaskInfoCount(countType, taskId, account string) int64 {
-	getInt := redisDeal.RedisDoHGetInt(redisKeys.GetSendMsgTaskInfoCountKey(), countType+"_"+taskId+"_"+account)
+func GetSendMsgTaskInfoCount(countType, account string) int64 {
+	getInt := redisDeal.RedisDoHGetInt(redisKeys.GetSendMsgTaskInfoCountKey(), countType+"_"+account)
 	return getInt
 }
 

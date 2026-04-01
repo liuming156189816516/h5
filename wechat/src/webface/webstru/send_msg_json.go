@@ -18,4 +18,6 @@ type GetSendMsgInfoListInfo struct {
 	SucessNum     int64  `json:"sucess_num"`      //已完成数量
 	ArrivedNum    int64  `json:"arrived_num"`     //已送达
 	Reason        string `json:"reason"`          //原因
+	Itime         int64  `json:"itime"`           //创建时间
+	Ptime         int64  `json:"ptime"`           //更新时间
 }
