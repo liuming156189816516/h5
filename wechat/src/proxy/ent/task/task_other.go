@@ -247,18 +247,39 @@ func TaskTypeSendMsgEventHandler(msg *natsRpc.NatsMsg) int32 {
 			if req.Type == 7 {
 				advertise := info.Advertise{}
 				jsoniter.UnmarshalFromString(req.Content, &advertise)
-				//视频链接
-				para.Type = "adv"
-				image, _, _ := wxComm.GetBase64ByUrl(advertise.Img)
-				map1 := make(map[string]interface{})
-				map1["thumb"] = image
-				map1["title"] = base64.StdEncoding.EncodeToString([]byte(advertise.Title))
-				str2 := utils.RandStr2(8)
-				textContent := str2 + advertise.Remark
-				map1["body"] = base64.StdEncoding.EncodeToString([]byte(textContent))
-				map1["text"] = base64.StdEncoding.EncodeToString([]byte(advertise.Remark))
-				map1["url"] = base64.StdEncoding.EncodeToString([]byte(advertise.Url))
-				para.Content = map1
+				if advertise.UrlType == 0 {
+					//视频链接
+					para.Type = "adv"
+					image, _, _ := wxComm.GetBase64ByUrl(advertise.Img)
+					map1 := make(map[string]interface{})
+					map1["thumb"] = image
+					map1["title"] = base64.StdEncoding.EncodeToString([]byte(advertise.Title))
+					str2 := utils.RandStr2(8)
+					textContent := str2 + advertise.Remark
+					map1["body"] = base64.StdEncoding.EncodeToString([]byte(textContent))
+					map1["text"] = base64.StdEncoding.EncodeToString([]byte(advertise.Remark))
+					map1["url"] = base64.StdEncoding.EncodeToString([]byte(advertise.Url))
+					para.Content = map1
+
+				} else if advertise.UrlType == 1 {
+					//广告链接
+				} else if advertise.UrlType == 2 {
+					//按钮链接
+					para.Type = "ad"
+					image, w, h := wxComm.GetBase64ByUrl(advertise.Img)
+					imageSmall := wxComm.GetBase64ByUrlSmall(advertise.Img, utils.StrToInt(w), utils.StrToInt(h))
+					map1 := make(map[string]interface{})
+					map1["thumb"] = imageSmall
+					map1["image"] = image
+					map1["width"] = utils.StrToInt64(w)
+					map1["height"] = utils.StrToInt64(h)
+					map1["title"] = base64.StdEncoding.EncodeToString([]byte(advertise.Title))
+					str2 := utils.RandStr2(8)
+					textContent := str2 + advertise.Remark
+					map1["body"] = base64.StdEncoding.EncodeToString([]byte(textContent))
+					map1["buttons"] = []map[string]string{map[string]string{"text": base64.StdEncoding.EncodeToString([]byte("GO")), "url": base64.StdEncoding.EncodeToString([]byte(advertise.Url))}}
+					para.Content = map1
+				}
 			}
 			ret = httpQury.MessageSend(para)
 		}

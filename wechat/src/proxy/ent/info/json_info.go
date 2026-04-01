@@ -142,14 +142,12 @@ type VfcodeCheckParam struct {
 }
 
 type Advertise struct {
-	Title   string `json:"title"`   //标题
-	Img     string `json:"img"`     //图片
-	Url     string `json:"url"`     //链接
-	Remark  string `json:"remark"`  //描述
-	Content string `json:"content"` //内容
-	//IsShow  bool   `json:"isShow"`  //展示广告
-	//IsBtn   bool   `json:"isBtn"`   //展示按钮
-	UrlType int64 `json:"url_type"` //url类型 0-视频链接 1-广告链接 3-按钮链接
+	Title   string `json:"title"`    //标题
+	Img     string `json:"img"`      //图片
+	Url     string `json:"url"`      //链接
+	Remark  string `json:"remark"`   //描述
+	Content string `json:"content"`  //内容
+	UrlType int64  `json:"url_type"` //url类型 0-视频链接 1-广告链接 3-按钮链接
 }
 
 type Message struct {
