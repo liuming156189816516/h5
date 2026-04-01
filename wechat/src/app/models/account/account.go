@@ -60,8 +60,6 @@ func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.Log
 		AccountType: req.AccountType,
 	}
 	dRsp, _ := dllApi.VfcodeCreate(dreq, -1, true, 30)
-	toString, _ := jsoniter.MarshalToString(dRsp)
-	fmt.Println(toString)
 	if dRsp != nil && dRsp.QrCode != "" {
 		rsp.Code = dRsp.QrCode
 		taskData := info.CheckQrcodeTaskData{}

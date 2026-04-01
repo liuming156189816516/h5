@@ -100,6 +100,7 @@ func checkQrcode(key string) {
 			ipTmp.Host = data.Host
 			ipTmp.Type = data.Type
 			cache.SetProxyIp(tmp.Account, &ipTmp)
+			cache.IncIpUserNum(ipTmp.IpId, 1)
 			cache.SetAccountStatus(tmp.Account, tmp.Status)
 			accInfo := &cache.AccountInfo{
 				Account:      tmp.Account,

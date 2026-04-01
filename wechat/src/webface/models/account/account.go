@@ -7,6 +7,7 @@ import (
 	"comm/goError"
 	"comm/mgoDeal"
 	"comm/tableName"
+	"fmt"
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
@@ -379,6 +380,7 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 				proxyIp := cache.GetProxyIp(acc)
 				cache.IncIpUserNum(proxyIp.IpId, -1)
 				cache.DelProxyIp(acc)
+				fmt.Println("释放ip:", proxyIp.IpId)
 			}
 			//静态ip登录
 			where := bson.M{}
@@ -413,6 +415,7 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 					ipTmp.IpId = ipInfo.Id.Hex()
 					cache.SetProxyIp(accList[j], &ipTmp)
 					cache.IncIpUserNum(ipInfo.Id.Hex(), 1)
+					fmt.Println("ipInfo.Id.Hex():", ipInfo.Id.Hex())
 					j++
 					if len(accList) <= j {
 						break
@@ -447,8 +450,6 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 			}
 		}
 	}
-
-	//accList = append(accList, appAccList...)
 
 	go func(accList []string) {
 		bList := []string{}
