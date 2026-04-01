@@ -37,7 +37,7 @@ func TaskTypeSendMsgEventBackHandler(msg *natsRpc.NatsMsg) int32 {
 
 	if rsp.Code == -2 {
 		//粉丝数据不足
-		sendmsg.UpSendMsgInfo(bson.M{"account": bson.ObjectIdHex(req.Account)}, bson.M{"reason": "粉丝数据不足"})
+		sendmsg.UpSendMsgInfo(bson.M{"account": req.Account}, bson.M{"reason": "粉丝数据不足"})
 		return natsRpc.ESMR_SUCCEED
 	}
 
