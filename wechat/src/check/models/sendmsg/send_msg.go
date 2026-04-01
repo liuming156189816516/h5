@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func TaskRun() {
+/*func TaskRun() {
 
 	go func() {
 		//生产群发队列
@@ -45,6 +45,14 @@ func TaskRun() {
 			}
 		}
 	}()
+}*/
+
+func TaskRun() {
+	time.Sleep(2 * time.Second)
+	createSendTask(time.Now(), "createSendTask")
+
+	time.Sleep(10 * time.Second)
+	doSendMsg(time.Now(), "doSendMsg")
 }
 
 func createSendTask(t time.Time, lock string) {

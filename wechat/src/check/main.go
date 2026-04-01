@@ -3,6 +3,7 @@ package main
 import (
 	"check/models/ip"
 	"check/models/qrcode"
+	"check/models/sendmsg"
 	"comm/mgoDeal"
 	"comm/redisDeal"
 	"github.com/astaxie/beego"
@@ -84,7 +85,7 @@ func main() {
 	}
 
 	go qrcode.TaskRun()
-	//go sendmsg.TaskRun()
+	go sendmsg.TaskRun()
 	go ip.TaskRun()
 
 	//启动服务器
