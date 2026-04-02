@@ -64,7 +64,7 @@ func UploadAwsFile(fileUrl,fileName string) string {
 	myBucket := beego.AppConfig.String("cos::myBucket")
 	region := beego.AppConfig.String("cos::region")
 	if region == "" {
-		region = "us-east-1"
+		region = "ap-southeast-1"
 	}
 	if accessKey == "" || accessSecret == "" {
 		//load default credentials
