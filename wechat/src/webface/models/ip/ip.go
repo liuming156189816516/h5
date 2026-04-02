@@ -471,14 +471,13 @@ func (this *IpServer) DoOutPutIp(req *info.DoOutPutIpReq, rsp *info.DoOutPutIpRs
 
 // 获取ipv4分配
 func (this *IpServer) GetIpV4Allot(req *info.NullReq, rsp *info.GetIpV4AllotRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
 	totalCount := int64(0)
 	UseNum := int64(0)
 	sumwhere := []bson.M{}
 	sumwhere = append(sumwhere, bson.M{"$match": bson.M{"ip_type": int64(1)}})
 	sumwhere = append(sumwhere, bson.M{"$match": bson.M{"ip_category": int64(1)}})
 	sumwhere = append(sumwhere, bson.M{"$group": bson.M{"_id": "null", "num_sum": bson.M{"$sum": "$user_num"}}})
-	sumRet, err := mgoDeal.QueryMongoSum(comm.GetUserMgoDBName(uid), tableName.GetTableIpListInfo(), sumwhere)
+	sumRet, err := mgoDeal.QueryMongoSum(comm.GetMgoDBName(), tableName.GetTableIpListInfo(), sumwhere)
 	if err == nil {
 		if p, ok := sumRet["num_sum"]; ok {
 			UseNum = utils.GetInt64(p)
@@ -488,7 +487,7 @@ func (this *IpServer) GetIpV4Allot(req *info.NullReq, rsp *info.GetIpV4AllotRsp)
 	sumwhere2 = append(sumwhere2, bson.M{"$match": bson.M{"ip_type": int64(1)}})
 	sumwhere2 = append(sumwhere2, bson.M{"$match": bson.M{"ip_category": int64(1)}})
 	sumwhere2 = append(sumwhere2, bson.M{"$group": bson.M{"_id": "null", "num_sum": bson.M{"$sum": "$allot_num"}}})
-	sumRet2, err := mgoDeal.QueryMongoSum(comm.GetUserMgoDBName(uid), tableName.GetTableIpListInfo(), sumwhere2)
+	sumRet2, err := mgoDeal.QueryMongoSum(comm.GetMgoDBName(), tableName.GetTableIpListInfo(), sumwhere2)
 	if err == nil {
 		if p, ok := sumRet2["num_sum"]; ok {
 			totalCount = utils.GetInt64(p)
@@ -502,14 +501,13 @@ func (this *IpServer) GetIpV4Allot(req *info.NullReq, rsp *info.GetIpV4AllotRsp)
 
 // 获取ipv6分配
 func (this *IpServer) GetIpV6Allot(req *info.NullReq, rsp *info.GetIpV6AllotRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
 	totalCount := int64(0)
 	UseNum := int64(0)
 	sumwhere := []bson.M{}
 	sumwhere = append(sumwhere, bson.M{"$match": bson.M{"ip_type": int64(2)}})
 	sumwhere = append(sumwhere, bson.M{"$match": bson.M{"ip_category": int64(1)}})
 	sumwhere = append(sumwhere, bson.M{"$group": bson.M{"_id": "null", "num_sum": bson.M{"$sum": "$user_num"}}})
-	sumRet, err := mgoDeal.QueryMongoSum(comm.GetUserMgoDBName(uid), tableName.GetTableIpListInfo(), sumwhere)
+	sumRet, err := mgoDeal.QueryMongoSum(comm.GetMgoDBName(), tableName.GetTableIpListInfo(), sumwhere)
 	if err == nil {
 		if p, ok := sumRet["num_sum"]; ok {
 			UseNum = utils.GetInt64(p)
@@ -519,7 +517,7 @@ func (this *IpServer) GetIpV6Allot(req *info.NullReq, rsp *info.GetIpV6AllotRsp)
 	sumwhere2 = append(sumwhere2, bson.M{"$match": bson.M{"ip_type": int64(2)}})
 	sumwhere2 = append(sumwhere2, bson.M{"$match": bson.M{"ip_category": int64(1)}})
 	sumwhere2 = append(sumwhere2, bson.M{"$group": bson.M{"_id": "null", "num_sum": bson.M{"$sum": "$allot_num"}}})
-	sumRet2, err := mgoDeal.QueryMongoSum(comm.GetUserMgoDBName(uid), tableName.GetTableIpListInfo(), sumwhere2)
+	sumRet2, err := mgoDeal.QueryMongoSum(comm.GetMgoDBName(), tableName.GetTableIpListInfo(), sumwhere2)
 	if err == nil {
 		if p, ok := sumRet2["num_sum"]; ok {
 			totalCount = utils.GetInt64(p)
