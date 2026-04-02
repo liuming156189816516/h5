@@ -6,7 +6,6 @@ import (
 	"comm/goError"
 	"comm/mgoDeal"
 	"comm/tableName"
-	"fmt"
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
@@ -186,11 +185,7 @@ func (this *IpServer) GetIpList(req *info.GetIpListReq, rsp *info.GetIpListRsp) 
 			} else if ipInfo.ExpireTime-time.Now().Unix() <= 60*60*24*3 && ipInfo.ExpireTime-time.Now().Unix() > 0 {
 				expireStatus = 3
 			}
-			//userNum := redisDeal.RedisDoHGetInt(redisKeys.GetIpUserNumKey(uid), ipInfo.Id.Hex())
-
 			userNum := cache.GetIpUserNum(ipInfo.Id.Hex())
-			fmt.Println("ip", ipInfo.Id.Hex())
-			fmt.Println("userNum", userNum)
 			if expireStatus != ipInfo.ExpireStatus || ipInfo.UserNum != userNum {
 				isUp = true
 			}

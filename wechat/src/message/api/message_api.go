@@ -149,6 +149,8 @@ func resultLogin(req *natsRpc.ReceiveMessagesReq) int32 {
 		}
 		accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"reason": reason, "status": int64(1), "offline_time": time.Now().Unix()})
 		cache.SetAccountStatus(req.Account, 1)
+		ip := cache.GetProxyIp(req.Account)
+		cache.IncIpUserNum(ip.IpId, -1)
 		sendmsg.UpSendMsgInfo(bson.M{"account": req.Account}, bson.M{"account_status": 1})
 	}
 	return natsRpc.ESMR_SUCCEED
