@@ -58,7 +58,6 @@ func tryLock(uid string, cmd string) bool {
 // 不检查频率限制
 var exceptionList = map[string]bool{
 	"AccountController-GetQrCode":        true,
-	"AccountController-LoginAccount":     true,
 	"AccountController-GetAccountResult": true,
 }
 
@@ -68,7 +67,6 @@ var exceptionList5Second = map[string]bool{}
 // 不检查登录限制
 var noLoginMap = map[string]bool{
 	"GetQrCode":        true,
-	"LoginAccount":     true,
 	"GetAccountResult": true,
 }
 
