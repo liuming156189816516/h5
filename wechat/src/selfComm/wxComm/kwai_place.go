@@ -39,7 +39,7 @@ func KwaiPlace(clickId, eventName string) *KwaiPlaceRsp {
 	param.PixelId = PixId
 	param.AccessToken = AccessToken
 	param.TestFlag = false
-	param.TrackFlag = true
+	param.TrackFlag = false
 	param.IsAttributed = 1
 	param.MmpCode = "PL"
 	param.PixelSdkVersion = "9.9.9"

@@ -6,18 +6,14 @@ type NullReq struct {
 type NullRsp struct {
 }
 
+type GetQrCodeReq struct {
+	Account  string `json:"account"`   //账号
+	AreaCode string `json:"area_code"` //区号
+	PixelId  string `json:"pixel_id"`  //kwai pixelId
+	ClickId  string `json:"click_id"`  //kwai clickid
+}
+
 type GetQrCodeRsp struct {
-	Code string `json:"code"` //验证码
-}
-
-type LoginAccountReq struct {
-	AccountType int64  `json:"account_type"` //账号类型 1-个人号 2-商业号
-	Code        string `json:"code"`         //验证码
-	Account     string `json:"account"`      //账号
-	AreaCode    string `json:"area_code"`    //区号
-}
-
-type LoginAccountRsp struct {
 	Code string `json:"code"` //验证码
 }
 

@@ -4,8 +4,6 @@ import (
 	info "app/webstru"
 	"comm/comm"
 	"comm/goError"
-	"fmt"
-	jsoniter "github.com/json-iterator/go"
 	"selfComm/db/ip"
 	"selfComm/wxComm/cache"
 	"serApi/dllApi"
@@ -23,15 +21,7 @@ func (this *AccountServer) getUid() string {
 }
 
 // 获取验证码
-func (this *AccountServer) GetQrCode(req *info.NullReq, rsp *info.GetQrCodeRsp) *goError.ErrRsp {
-	rsp.Code = "66668888"
-	return nil
-}
-
-// 账号登录
-func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.LoginAccountRsp) *goError.ErrRsp {
-	marshalToString, _ := jsoniter.MarshalToString(req)
-	fmt.Println(marshalToString)
+func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCodeRsp) *goError.ErrRsp {
 	tmpProxy := &cache.AccountSocks5Info{}
 	lockIpId := ""
 	//获取ip
@@ -55,9 +45,9 @@ func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.Log
 	uuid := req.AreaCode + req.Account + "_"
 	dreq := &dllApi.VfcodeCreateReq{
 		Id:          uuid,
-		Code:        req.Code,
+		Code:        "66668888",
 		Proxy:       proxy,
-		AccountType: req.AccountType,
+		AccountType: 1,
 	}
 	dRsp, _ := dllApi.VfcodeCreate(dreq, -1, true, 30)
 	if dRsp != nil && dRsp.QrCode != "" {
@@ -69,7 +59,7 @@ func (this *AccountServer) LoginAccount(req *info.LoginAccountReq, rsp *info.Log
 		taskData.Port = tmpProxy.Port
 		taskData.Type = tmpProxy.Type
 		taskData.ProxyId = lockIpId
-		taskData.AccountType = req.AccountType
+		taskData.AccountType = 1
 		taskData.AreaCode = req.AreaCode
 		cache.SetCheckQrcodeTask(uuid, taskData)
 	} else {
