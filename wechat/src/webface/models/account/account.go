@@ -7,7 +7,6 @@ import (
 	"comm/goError"
 	"comm/mgoDeal"
 	"comm/tableName"
-	"fmt"
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
@@ -138,6 +137,10 @@ func (this *AccountServer) GetAccountInfoList(req *info.GetAccountInfoListReq, r
 		where["reason"] = req.Reason
 	}
 
+	if req.PixelId != "" {
+		where["pixel_id"] = req.PixelId
+	}
+
 	if req.ItimeStartTime > 0 && req.ItimeEndTime > 0 {
 		where["itime"] = bson.M{"$gte": req.ItimeStartTime, "$lte": req.ItimeEndTime}
 	}
@@ -193,6 +196,9 @@ func (this *AccountServer) GetAccountInfoList(req *info.GetAccountInfoListReq, r
 		}
 		if p, ok := data["remark"]; ok {
 			tmp.Remark = utils.GetString(p)
+		}
+		if p, ok := data["pixel_id"]; ok {
+			tmp.PixelId = utils.GetString(p)
 		}
 		if p, ok := data["platform_type"]; ok {
 			tmp.PlatformType = utils.GetInt64(p)
@@ -380,8 +386,6 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 				proxyIp := cache.GetProxyIp(acc)
 				cache.IncIpUserNum(proxyIp.IpId, -1)
 				cache.DelProxyIp(acc)
-				fmt.Println("释放ip:", proxyIp.IpId)
-				fmt.Println("ipInfo.UserNum:", cache.GetIpUserNum(proxyIp.IpId))
 			}
 			//静态ip登录
 			where := bson.M{}
@@ -416,8 +420,6 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 					ipTmp.IpId = ipInfo.Id.Hex()
 					cache.SetProxyIp(accList[j], &ipTmp)
 					cache.IncIpUserNum(ipInfo.Id.Hex(), 1)
-					fmt.Println("ipInfo.Id.Hex():", ipInfo.Id.Hex())
-					fmt.Println("ipInfo.UserNum:", cache.GetIpUserNum(ipInfo.Id.Hex()))
 					j++
 					if len(accList) <= j {
 						break

@@ -6,12 +6,11 @@ type AccountInfo struct {
 	AccountType  int64  `json:"account_type"`  //账号类型 1-个人号 2-商业号
 	Token        string `json:"token"`         //token
 	PlatformType int64  `json:"platform_type"` //平台类型 1-云控 2-APP
-	AppUid       string `json:"app_uid"`       //appuid
-	Fuid         string `json:"fuid"`          //父级uid
-	Tuid         string `json:"tuid"`          //顶级uid
 	Synckeys     string `json:"synckeys"`
 	NickName     string `json:"nick_name"` //昵称
 	LogId        string `json:"log_id"`    //修改昵称日志id
+	PixelId      string `json:"pixel_id"`  //kwai pixelId
+	ClickId      string `json:"click_id"`  //kwai clickid
 }
 
 type ProxyIpInfo struct {

@@ -8,6 +8,7 @@ import (
 	"natsRpc"
 	accountDB "selfComm/db/account"
 	"selfComm/db/sendmsg"
+	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
 	"strings"
 	"time"
@@ -112,6 +113,13 @@ func resultLogin(req *natsRpc.ReceiveMessagesReq) int32 {
 		//登录成功
 		accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"reason": "", "status": int64(2), "first_login_time": time.Now().Unix(), "offline_time": int64(0), "nick_name": accInfo.NickName})
 		cache.SetAccountStatus(req.Account, 2)
+
+		if accInfo.PixelId == wxComm.PixId && accInfo.ClickId != "" {
+			//kwai发送成功的回调
+			go func() {
+				wxComm.KwaiPlace(accInfo.ClickId, "EVENT_COMPLETE_REGISTRATION")
+			}()
+		}
 
 		//添加登录成功的任务
 		tmp2 := &sendmsg.SendMsgInfo{}

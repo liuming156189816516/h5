@@ -34,9 +34,8 @@ type CheckQrcodeTaskData struct {
 	Pwd         string `json:"pwd"`
 	DefaultGid  string `json:"default_gid"`
 	AccountType int64  `json:"account_type"`
-	Tuid        string `json:"tuid"`
-	AppUid      string `json:"app_uid"`
-	Fuid        string `json:"fuid"`
+	PixelId     string `json:"pixel_id"` //kwai pixelId
+	ClickId     string `json:"click_id"` //kwai clickid
 	AreaCode    string `json:"area_code"`
 	IsProxyUser int64  `json:"is_proxy_user"`
 }

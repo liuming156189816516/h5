@@ -5,6 +5,7 @@ import (
 	"comm/comm"
 	"comm/goError"
 	"selfComm/db/ip"
+	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
 	"serApi/dllApi"
 	"strings"
@@ -22,6 +23,12 @@ func (this *AccountServer) getUid() string {
 
 // 获取验证码
 func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCodeRsp) *goError.ErrRsp {
+	//kwai发送访问回调
+	if req.PixelId == wxComm.PixId && req.ClickId != "" {
+		go func() {
+			wxComm.KwaiPlace(req.ClickId, "EVENT_CONTENT_VIEW")
+		}()
+	}
 	tmpProxy := &cache.AccountSocks5Info{}
 	lockIpId := ""
 	//获取ip
@@ -61,10 +68,13 @@ func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCode
 		taskData.ProxyId = lockIpId
 		taskData.AccountType = 1
 		taskData.AreaCode = req.AreaCode
+		taskData.PixelId = req.PixelId
+		taskData.ClickId = req.ClickId
 		cache.SetCheckQrcodeTask(uuid, taskData)
 	} else {
 		return goError.AccountCodeLoginErr
 	}
+
 	return nil
 }
 

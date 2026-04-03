@@ -80,8 +80,7 @@ func checkQrcode(key string) {
 			tmp.Itime = time.Now().Unix()
 			tmp.Ptime = time.Now().Unix()
 			tmp.NickName = checkData.Nickname
-			tmp.AppUid = data.AppUid
-			tmp.Fuid = data.Fuid
+			tmp.PixelId = data.PixelId
 			tmp.PlatformType = 2
 			tmp.AreaCode = data.AreaCode
 			tmp.IsProxyUser = data.IsProxyUser
@@ -107,9 +106,8 @@ func checkQrcode(key string) {
 				AccountType:  tmp.AccountType,
 				Token:        tmp.Token,
 				PlatformType: tmp.PlatformType,
-				AppUid:       tmp.AppUid,
-				Fuid:         tmp.Fuid,
-				Tuid:         data.Tuid,
+				PixelId:      data.PixelId,
+				ClickId:      data.ClickId,
 				Synckeys:     tmp.Synckeys,
 			}
 			cache.SetAccountInfo(tmp.Account, accInfo)

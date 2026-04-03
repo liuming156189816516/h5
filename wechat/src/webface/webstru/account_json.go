@@ -31,6 +31,7 @@ type GetAccountInfoListReq struct {
 	AccountType         int64  `json:"account_type"`           //账号类型 1-个人号 2-商业号
 	PlatformType        int64  `json:"platform_type"`          //平台类型 1-云控 2-APP
 	Reason              string `json:"reason"`                 //离线原因
+	PixelId             string `json:"pixel_id"`               //渠道
 	ItimeStartTime      int64  `json:"itime_start_time"`       //入库开始时间
 	ItimeEndTime        int64  `json:"itime_end_time"`         //入库结束时间
 	FirstLoginStartTime int64  `json:"first_login_start_time"` //首次登录开始时间
@@ -58,6 +59,7 @@ type GetAccountInfoListInfo struct {
 	OfflineTime    int64  `json:"offline_time"`     //离线时间
 	FirstLoginTime int64  `json:"first_login_time"` //首次登录时间
 	Remark         string `json:"remark"`           //备注
+	PixelId        string `json:"pixel_id"`         //渠道
 	PlatformType   int64  `json:"platform_type"`    //平台类型 1-云控 2-APP
 	Itime          int64  `json:"itime"`            //入库时间
 	FuserName      string `json:"fuser_name"`       //上级用户

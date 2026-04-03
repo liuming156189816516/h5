@@ -26,6 +26,8 @@ type CheckQrcodeTaskData struct {
 	Pwd         string `json:"pwd"`
 	AccountType int64  `json:"account_type"`
 	AreaCode    string `json:"area_code"`
+	PixelId     string `json:"pixel_id"` //kwai pixelId
+	ClickId     string `json:"click_id"` //kwai clickid
 }
 
 type GetAccountResultReq struct {

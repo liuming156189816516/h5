@@ -27,8 +27,7 @@ type AccountInfo struct {
 	Itime             int64         `json:"itime" bson:"itime"`                             //创建时间
 	Ptime             int64         `json:"ptime" bson:"ptime"`                             //更新时间
 	PullDistributeNum int64         `json:"pull_distribute_num" bson:"pull_distribute_num"` //拉群分配数量
-	AppUid            string        `json:"app_uid" bson:"app_uid"`                         //appuid
-	Fuid              string        `json:"fuid" bson:"fuid"`                               //父级uid
+	PixelId           string        `json:"pixel_id" bson:"pixel_id"`                       //渠道id
 	ProxyIp           string        `json:"proxy_ip" bson:"proxy_ip"`                       //代理ip
 	IpTime            int64         `json:"ip_time" bson:"ip_time"`                         //分配ip时间
 	AreaCode          string        `json:"area_code" bson:"area_code"`                     //区号
