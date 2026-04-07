@@ -15,7 +15,7 @@ func TaskRun() {
 	go func() {
 		//生产群发队列
 		time.Sleep(2 * time.Second)
-		var ticker = time.NewTicker(10 * time.Second)
+		var ticker = time.NewTicker(2 * time.Second)
 		for {
 			select {
 			case t := <-ticker.C:
@@ -32,7 +32,7 @@ func TaskRun() {
 	go func() {
 		//群发任务
 		time.Sleep(2 * time.Second)
-		var ticker = time.NewTicker(10 * time.Second)
+		var ticker = time.NewTicker(2 * time.Second)
 		for {
 			select {
 			case t := <-ticker.C:
