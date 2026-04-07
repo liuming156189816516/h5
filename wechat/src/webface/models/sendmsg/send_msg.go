@@ -33,7 +33,7 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 	if req.AccountStatus > 0 {
 		where["account_status"] = req.AccountStatus
 	}
-	sort := "itime"
+	sort := "-itime"
 	rsp.List = []*info.GetSendMsgInfoListInfo{}
 	rsp.Total, _ = mgoDeal.QueryMongoCount(db, tb, where)
 	if rsp.Total == 0 {
