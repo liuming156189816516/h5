@@ -9,6 +9,7 @@ import (
 	info "script/webstru"
 	"selfComm/db/fb"
 	"selfComm/db/log"
+	"selfComm/wxComm"
 )
 
 // 群发
@@ -59,6 +60,10 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 			toString, _ := jsoniter.MarshalToString(fb)
 			fmt.Println("执行完成3=========================>", toString)
 		}
+	}
+	if req.Type == "4" {
+		eventID := comm.Md5("123456" + "1675146863614584")
+		wxComm.FbReport(eventID, "SubmitVerification", "111123346632163", "", "1675146863614584", "")
 	}
 
 	return nil

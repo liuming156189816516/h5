@@ -47,7 +47,7 @@ func FbReport(eventID string, eventName, fbclid, Fbp, PixelId, ReqId string) {
 
 	// 构造 event
 	event := FbEvent{}
-	event.EventId = eventName + eventID
+	event.EventId = eventID
 	event.EventName = eventName
 	event.EventTime = time.Now().Unix()
 	event.ActionSource = "website"
