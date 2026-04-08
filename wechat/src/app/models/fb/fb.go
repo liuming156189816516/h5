@@ -20,7 +20,7 @@ func (this *FbService) getUid() string {
 func (this *FbService) FbReport(req *info.FbReportReq, rsp *info.NullRsp) *goError.ErrRsp {
 
 	toString, _ := jsoniter.MarshalToString(req)
-	fmt.Println("toString1=================>", toString)
+	fmt.Println("toString1==================>", toString)
 
 	//data := &info.FbData{}
 	//jsoniter.UnmarshalFromString(req.Data, data)
