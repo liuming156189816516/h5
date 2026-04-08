@@ -24,21 +24,22 @@ func (this *FbService) FbReport(req *info.FbReportReq, rsp *info.NullRsp) *goErr
 	data := &info.FbData{}
 	jsoniter.UnmarshalFromString(req.Data, data)
 
-	//写入日志
-	tmp := &log.FbReportLog{}
-	tmp.Id = bson.NewObjectId()
-	tmp.Ptype = req.Ptype
-	tmp.Data = req.Data
-	log.AddFbReportLog(tmp)
+	if data.Fbclid != "" {
+		//写入日志
+		tmp := &log.FbReportLog{}
+		tmp.Id = bson.NewObjectId()
+		tmp.Ptype = req.Ptype
+		tmp.Data = req.Data
+		log.AddFbReportLog(tmp)
 
-	fbInfo := cache.FbReport{
-		Ptype:   req.Ptype,
-		Fbclid:  data.Fbclid,
-		Fbp:     data.Fbp,
-		PixelId: data.PixelId,
-		Phone:   data.AreaCode + data.Account,
+		fbInfo := cache.FbReport{
+			Ptype:   req.Ptype,
+			Fbclid:  data.Fbclid,
+			Fbp:     data.Fbp,
+			PixelId: data.PixelId,
+			Phone:   data.AreaCode + data.Account,
+		}
+		cache.SetFbReport(&fbInfo)
 	}
-	cache.SetFbReport(&fbInfo)
-
 	return nil
 }
