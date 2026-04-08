@@ -75,6 +75,21 @@ func GetTableSendMsgInfoListInfo() string {
 	return "u_send_msg_info"
 }
 
+//Fb
+func GetTableFb() string {
+	return "u_fb"
+}
+
+//FbLog
+func GetTableFbLog() string {
+	return "u_fb_log"
+}
+
+//FbReportLog
+func GetTableFbReportLog() string {
+	return "u_fb_report_log"
+}
+
 // 抽奖记录
 func GetTableLotteryRecordList() string {
 	return "u_lottery_record"
