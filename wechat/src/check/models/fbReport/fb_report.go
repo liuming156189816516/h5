@@ -57,6 +57,16 @@ func fbReport(t time.Time) {
 
 		if report.Ptype == 1 {
 			wxComm.FbReport("", eventName, report.Fbclid, report.Fbp, report.PixelId, "")
+
+			tmp1 := &log.FbLog{}
+			tmp1.Id = bson.NewObjectId()
+			tmp1.EventID = ""
+			tmp1.EventName = eventName
+			tmp1.Phone = report.Phone
+			tmp1.Fbclid = report.Fbclid
+			tmp1.Fbp = report.Fbp
+			tmp1.PixelId = report.PixelId
+			log.AddFbLog(tmp1)
 		}
 
 		if report.Ptype == 2 {
@@ -80,7 +90,6 @@ func fbReport(t time.Time) {
 				tmp1.Fbp = report.Fbp
 				tmp1.PixelId = report.PixelId
 				log.AddFbLog(tmp1)
-
 			}
 		}
 
@@ -89,6 +98,16 @@ func fbReport(t time.Time) {
 			if oneFb.Id.Hex() != "" {
 				eventID := comm.Md5(oneFb.Phone + oneFb.PixelId)
 				wxComm.FbReport(eventID, eventName, oneFb.Fbclid, oneFb.Fbp, oneFb.PixelId, oneFb.Id.Hex())
+
+				tmp1 := &log.FbLog{}
+				tmp1.Id = bson.NewObjectId()
+				tmp1.EventID = eventID
+				tmp1.EventName = eventName
+				tmp1.Phone = oneFb.Phone
+				tmp1.Fbclid = oneFb.Fbclid
+				tmp1.Fbp = oneFb.Fbp
+				tmp1.PixelId = oneFb.PixelId
+				log.AddFbLog(tmp1)
 			}
 		}
 	}
