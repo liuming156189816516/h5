@@ -59,6 +59,7 @@ func tryLock(uid string, cmd string) bool {
 var exceptionList = map[string]bool{
 	"AccountController-GetQrCode":        true,
 	"AccountController-GetAccountResult": true,
+	"FbController-FbReport":              true,
 }
 
 // 限制5秒频率
@@ -68,6 +69,7 @@ var exceptionList5Second = map[string]bool{}
 var noLoginMap = map[string]bool{
 	"GetQrCode":        true,
 	"GetAccountResult": true,
+	"FbReport":         true,
 }
 
 // 每天清理一下

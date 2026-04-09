@@ -166,3 +166,8 @@ func GetJudaoTongji3Key() string {
 func GetAccountSocks5Key() string {
 	return fmt.Sprintf("vps_account_socks5")
 }
+
+// fb上报
+func GetFbReportKey() string {
+	return fmt.Sprintf("fb_report_key")
+}

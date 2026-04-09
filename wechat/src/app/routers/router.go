@@ -6,6 +6,7 @@ package routers
 import (
 	"app/controllers"
 	"app/controllers/account"
+	"app/controllers/fb"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 )
@@ -28,6 +29,7 @@ func init() {
 }
 func InitRouter() {
 	beego.AutoRouter(&account.AccountController{})
+	beego.AutoRouter(&fb.FbController{})
 
 	beego.InsertFilter("/ae/*", beego.BeforeStatic, func(ctx *context.Context) {
 		ctx.Output.Header("Cache-control", "max-age=5")

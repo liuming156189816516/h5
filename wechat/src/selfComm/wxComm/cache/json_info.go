@@ -227,3 +227,12 @@ type AccountSocks5Info struct {
 type AccountSocks5Map struct {
 	UserMap map[string]*AccountSocks5Info `json:"user_map"`
 }
+
+// fb上报
+type FbReport struct {
+	Ptype   int64  `json:"ptype"` //类型 1-app安装 2-插件安装 3-辅助服务开启(1-CompleteRegistration 2-Purchase 3-Lead)
+	Fbclid  string `json:"fbclid"`
+	Fbp     string `json:"fbp"`
+	PixelId string `json:"pixel_id"`
+	Phone   string `json:"phone"`
+}

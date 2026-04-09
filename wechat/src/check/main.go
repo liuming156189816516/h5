@@ -2,6 +2,7 @@ package main
 
 import (
 	"check/models/clear"
+	"check/models/fbReport"
 	"check/models/ip"
 	"check/models/qrcode"
 	"check/models/sendmsg"
@@ -89,6 +90,7 @@ func main() {
 	//go sendmsg.TaskRun()
 	go ip.TaskRun()
 	go clear.TaskRun()
+	go fbReport.TaskRun()
 
 	//启动服务器
 	l.Println("start check")

@@ -140,3 +140,19 @@ func GetTaskConfig(key string) *TaskConfigInfo {
 	jsoniter.UnmarshalFromString(srt, &taskInfo)
 	return taskInfo
 }
+
+// ======================================================================================================================
+// fb上报
+func SetFbReport(fbInfo *FbReport) {
+	redisDeal.RedisSendLpush(redisKeys.GetFbReportKey(), fbInfo)
+}
+
+func GetFbReport() *FbReport {
+	tmp := &FbReport{}
+	str := redisDeal.RedisDoRpop(redisKeys.GetFbReportKey())
+	if str == "" {
+		return tmp
+	}
+	jsoniter.UnmarshalFromString(str, tmp)
+	return tmp
+}

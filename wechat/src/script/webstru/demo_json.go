@@ -7,6 +7,7 @@ type DemoReq struct {
 	AdAccount string   `json:"ad_account"`
 	Ip        string   `json:"ip"`
 	Ua        string   `json:"ua"`
+	Type      string   `json:"type"`
 }
 
 type DemoRsp struct {
