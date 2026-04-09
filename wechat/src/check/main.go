@@ -5,7 +5,6 @@ import (
 	"check/models/fbReport"
 	"check/models/ip"
 	"check/models/qrcode"
-	"check/models/sendmsg"
 	"comm/mgoDeal"
 	"comm/redisDeal"
 	"github.com/astaxie/beego"
@@ -87,7 +86,7 @@ func main() {
 	}
 
 	go qrcode.TaskRun()
-	go sendmsg.TaskRun()
+	//go sendmsg.TaskRun()
 	go ip.TaskRun()
 	go clear.TaskRun()
 	go fbReport.TaskRun()
