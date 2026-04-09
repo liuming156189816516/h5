@@ -1,12 +1,14 @@
 package api
 
 import (
+	info "app/webstru"
 	"comm/event"
 	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"natsRpc"
 	accountDB "selfComm/db/account"
+	"selfComm/db/log"
 	"selfComm/db/sendmsg"
 	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
@@ -114,10 +116,28 @@ func resultLogin(req *natsRpc.ReceiveMessagesReq) int32 {
 		accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"reason": "", "status": int64(2), "first_login_time": time.Now().Unix(), "offline_time": int64(0), "nick_name": accInfo.NickName})
 		cache.SetAccountStatus(req.Account, 2)
 
+		//kwai的回调
 		if accInfo.PixelId == wxComm.PixId && accInfo.ClickId != "" {
-			//kwai发送成功的回调
 			go func() {
 				wxComm.KwaiPlace(accInfo.ClickId, "EVENT_COMPLETE_REGISTRATION")
+			}()
+		}
+
+		//fb的回调
+		if accInfo.PixelId != "" && accInfo.PixelId != wxComm.PixId {
+			go func() {
+				data := &info.FbData{}
+				data.Account = req.Account
+				tmp := &log.FbReportLog{}
+				tmp.Id = bson.NewObjectId()
+				tmp.Ptype = 3
+				tmp.Data = ""
+				log.AddFbReportLog(tmp)
+				fbInfo := cache.FbReport{
+					Ptype: 3,
+					Phone: req.Account,
+				}
+				cache.SetFbReport(&fbInfo)
 			}()
 		}
 
