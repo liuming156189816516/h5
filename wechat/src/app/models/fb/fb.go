@@ -4,7 +4,6 @@ import (
 	info "app/webstru"
 	"comm/comm"
 	"comm/goError"
-	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"selfComm/db/log"
@@ -22,8 +21,8 @@ func (this *FbService) getUid() string {
 
 func (this *FbService) FbReport(req *info.FbReportReq, rsp *info.NullRsp) *goError.ErrRsp {
 
-	toString, _ := jsoniter.MarshalToString(req)
-	fmt.Println("toString1==================>", toString)
+	/*toString, _ := jsoniter.MarshalToString(req)
+	fmt.Println("toString1==================>", toString)*/
 
 	data := &info.FbData{}
 	jsoniter.UnmarshalFromString(req.Data, data)
