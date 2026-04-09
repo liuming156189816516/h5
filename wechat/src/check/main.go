@@ -86,7 +86,7 @@ func main() {
 	}
 
 	go qrcode.TaskRun()
-	go sendmsg.TaskRun()
+	//go sendmsg.TaskRun()
 	go ip.TaskRun()
 	go clear.TaskRun()
 
