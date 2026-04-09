@@ -5,7 +5,6 @@ import (
 	"check/models/fbReport"
 	"check/models/ip"
 	"check/models/qrcode"
-	"check/models/sendmsg"
 	"comm/mgoDeal"
 	"comm/redisDeal"
 	"github.com/astaxie/beego"
