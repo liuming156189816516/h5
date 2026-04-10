@@ -171,3 +171,8 @@ func GetAccountSocks5Key() string {
 func GetFbReportKey() string {
 	return fmt.Sprintf("fb_report_key")
 }
+
+// check任务状态
+func GetTaskStatusKey() string {
+	return fmt.Sprintf("%s_task_status_key", comm.GetMgoDBName())
+}

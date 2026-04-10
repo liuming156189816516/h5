@@ -156,3 +156,18 @@ func GetFbReport() *FbReport {
 	jsoniter.UnmarshalFromString(str, tmp)
 	return tmp
 }
+
+// ======================================================================================================================
+// 设置全局任务状态（"0" 开启，"1" 关闭）
+func SetTaskStatus(status string) error {
+	return redisDeal.RedisSendSet(redisKeys.GetTaskStatusKey(), status)
+}
+
+// 获取全局任务状态（默认返回 "0" 表示开启）
+func GetTaskStatus() string {
+	status := redisDeal.RedisDoGetStr(redisKeys.GetTaskStatusKey())
+	if status == "" {
+		return "0"
+	}
+	return status
+}

@@ -24,6 +24,9 @@ func TaskRun() {
 					//正在执行
 					continue
 				}
+				if cache.GetTaskStatus() == "1" {
+					continue
+				}
 				go createSendTask(t, "createSendTask")
 			}
 		}
@@ -39,6 +42,9 @@ func TaskRun() {
 				val := GetStaticData("doSendMsg")
 				if val != "" {
 					//正在执行
+					continue
+				}
+				if cache.GetTaskStatus() == "1" {
 					continue
 				}
 				go doSendMsg(t, "doSendMsg")
