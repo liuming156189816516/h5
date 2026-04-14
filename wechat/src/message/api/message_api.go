@@ -3,7 +3,6 @@ package api
 import (
 	info "app/webstru"
 	"comm/event"
-	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"natsRpc"
@@ -21,8 +20,8 @@ import (
 func ReceiveMessagesEventHandler(reqList []*natsRpc.ReceiveMessagesReq) int32 {
 	for _, para := range reqList {
 
-		toString, _ := jsoniter.MarshalToString(para)
-		logs.Info("群发协议接收到消息===============>" + toString)
+		/*toString, _ := jsoniter.MarshalToString(para)
+		logs.Info("群发协议接收到消息===============>" + toString)*/
 
 		rcontentStr, _ := jsoniter.MarshalToString(para.Content)
 		rcontent := natsRpc.ReceiveMessagesContent{}
