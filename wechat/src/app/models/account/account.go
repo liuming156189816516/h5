@@ -4,8 +4,6 @@ import (
 	info "app/webstru"
 	"comm/comm"
 	"comm/goError"
-	"github.com/astaxie/beego/logs"
-	jsoniter "github.com/json-iterator/go"
 	"selfComm/db/ip"
 	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
@@ -25,12 +23,11 @@ func (this *AccountServer) getUid() string {
 
 // 获取验证码
 func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCodeRsp) *goError.ErrRsp {
-	paramStr, _ := jsoniter.MarshalToString(req)
-	logs.Info("GetQrCode param: " + paramStr)
+	/*paramStr, _ := jsoniter.MarshalToString(req)
+	logs.Info("GetQrCode param: " + paramStr)*/
 	//kwai发送访问回调
 	if req.PixelId == wxComm.PixId && req.ClickId != "" {
 		go func() {
-			//wxComm.KwaiPlace(req.ClickId, "EVENT_CONTENT_VIEW")
 			wxComm.KwaiPlace(req.ClickId, "EVENT_BUTTON_CLICK")
 		}()
 	}
