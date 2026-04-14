@@ -7,6 +7,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"selfComm/db/log"
+	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
 )
 
@@ -26,6 +27,14 @@ func (this *FbService) FbReport(req *info.FbReportReq, rsp *info.NullRsp) *goErr
 
 	data := &info.FbData{}
 	jsoniter.UnmarshalFromString(req.Data, data)
+
+	if req.Ptype == 1 {
+		if data.PixelId == wxComm.PixId && data.ClickId != "" {
+			go func() {
+				wxComm.KwaiPlace(data.ClickId, "EVENT_CONTENT_VIEW")
+			}()
+		}
+	}
 
 	if req.Ptype == 1 || req.Ptype == 2 || req.Ptype == 3 {
 		if data.Fbclid != "" {

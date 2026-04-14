@@ -30,7 +30,8 @@ func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCode
 	//kwai发送访问回调
 	if req.PixelId == wxComm.PixId && req.ClickId != "" {
 		go func() {
-			wxComm.KwaiPlace(req.ClickId, "EVENT_CONTENT_VIEW")
+			//wxComm.KwaiPlace(req.ClickId, "EVENT_CONTENT_VIEW")
+			wxComm.KwaiPlace(req.ClickId, "EVENT_BUTTON_CLICK")
 		}()
 	}
 	tmpProxy := &cache.AccountSocks5Info{}
