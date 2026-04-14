@@ -4,7 +4,6 @@ import (
 	info "app/webstru"
 	"comm/comm"
 	"comm/goError"
-	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"selfComm/db/log"
