@@ -30,6 +30,11 @@ func (this *FbService) FbReport(req *info.FbReportReq, rsp *info.NullRsp) *goErr
 
 	if req.Ptype == 1 {
 		if data.PixelId == wxComm.PixId && data.ClickId != "" {
+			tmp := &log.FbReportLog{}
+			tmp.Id = bson.NewObjectId()
+			tmp.Ptype = req.Ptype
+			tmp.Data = req.Data
+			log.AddFbReportLog(tmp)
 			go func() {
 				wxComm.KwaiPlace(data.ClickId, "EVENT_CONTENT_VIEW")
 			}()
