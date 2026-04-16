@@ -29,13 +29,13 @@ func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCode
 	/*paramStr, _ := jsoniter.MarshalToString(req)
 	logs.Info("GetQrCode param: " + paramStr)*/
 	//kwai发送访问回调
+	tmp := &log.FbReportLog{}
+	tmp.Id = bson.NewObjectId()
+	tmp.Ptype = 2
+	reqStr, _ := jsoniter.MarshalToString(req)
+	tmp.Data = reqStr
+	log.AddFbReportLog(tmp)
 	if req.PixelId == wxComm.PixId && req.ClickId != "" {
-		tmp := &log.FbReportLog{}
-		tmp.Id = bson.NewObjectId()
-		tmp.Ptype = 2
-		reqStr, _ := jsoniter.MarshalToString(req)
-		tmp.Data = reqStr
-		log.AddFbReportLog(tmp)
 		go func() {
 			wxComm.KwaiPlace(req.ClickId, "EVENT_BUTTON_CLICK")
 		}()
