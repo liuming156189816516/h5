@@ -177,3 +177,41 @@ func MessageSendAsynHandler(msg *natsRpc.NatsMsg) int32 {
 	msg.ResponeSucc(rsp)
 	return natsRpc.ESMR_SUCCEED
 }
+
+// 创建二维码
+func QrcodeCreateHandler(msg *natsRpc.NatsMsg) int32 {
+	req := &dllApi.QrcodeCreateReq{}
+	err := json.Unmarshal(msg.MsgData, &req)
+	if err != nil {
+		logs.Info("解析错误", err)
+		msg.Response(-1000, "参数错误")
+		return natsRpc.ESMR_SUCCEED
+	}
+	rsp := dllApi.QrcodeCreateRsp{}
+	err = QrcodeCreate(req, &rsp)
+	if err != nil {
+		msg.Response(-1000, fmt.Sprintf("请求错误:%s", err.Error()))
+		return natsRpc.ESMR_SUCCEED
+	}
+	msg.ResponeSucc(rsp)
+	return natsRpc.ESMR_SUCCEED
+}
+
+// 检测二维码
+func QrcodeCheckHandler(msg *natsRpc.NatsMsg) int32 {
+	req := &dllApi.QrcodeCheckReq{}
+	err := json.Unmarshal(msg.MsgData, &req)
+	if err != nil {
+		logs.Info("解析错误", err)
+		msg.Response(-1000, "参数错误")
+		return natsRpc.ESMR_SUCCEED
+	}
+	rsp := dllApi.QrcodeCheckRsp{}
+	err = QrcodeCheck(req, &rsp)
+	if err != nil {
+		msg.Response(-1000, fmt.Sprintf("请求错误:%s", err.Error()))
+		return natsRpc.ESMR_SUCCEED
+	}
+	msg.ResponeSucc(rsp)
+	return natsRpc.ESMR_SUCCEED
+}

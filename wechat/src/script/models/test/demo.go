@@ -5,10 +5,11 @@ import (
 	"comm/goError"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
-	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
-	"selfComm/db/log"
+	"selfComm/db/ip"
 	"selfComm/wxComm/cache"
+	"serApi/dllApi"
+	"strings"
 )
 
 // 群发
@@ -22,7 +23,7 @@ func (this *DemoServer) getUid() string {
 }
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
-	count1 := 0
+	/*count1 := 0
 	//内容查看
 	reportList := log.GetListFbReportLog(bson.M{"ptype": 1}, -1)
 	for _, report := range reportList {
@@ -48,7 +49,34 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	}
 
 	fmt.Println("验证码", count2)
-	fmt.Println("验证码去重复", len(qrCodeMap))
+	fmt.Println("验证码去重复", len(qrCodeMap))*/
+
+	tmpProxy := &cache.AccountSocks5Info{}
+	lockIp := ip.GetOneLockIp()
+	if lockIp.ProxyIp == "" {
+		return goError.IpOperationErr
+	}
+	split := strings.Split(lockIp.ProxyIp, ":")
+	tmpProxy.User = lockIp.ProxyUser
+	tmpProxy.Pwd = lockIp.ProxyPwd
+	tmpProxy.Type = lockIp.ProxyType
+	tmpProxy.Host = split[0]
+	tmpProxy.Port = split[1]
+	proxy := dllApi.AccountAddParamSocks5{}
+	proxy.User = tmpProxy.User
+	proxy.Pwd = tmpProxy.Pwd
+	proxy.Host = tmpProxy.Host
+	proxy.Port = tmpProxy.Port
+	proxy.Type = tmpProxy.Type
+	uuid := "355692051682"
+	dreq := &dllApi.QrcodeCreateReq{
+		Id:          uuid,
+		Proxy:       proxy,
+		AccountType: 1,
+	}
+	dRsp, err := dllApi.QrcodeCreate(dreq, -1, true, 30)
+	fmt.Println(err)
+	fmt.Println(jsoniter.MarshalToString(dRsp))
 	return nil
 }
 

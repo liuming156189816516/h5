@@ -127,6 +127,18 @@ type GroupInfoData struct {
 	Announcement bool     `json:"announcement"` //为true代表只能由管理员发言
 }
 
+type QrcodeCreateParam struct {
+	Account  string                `json:"account"`
+	Platform string                `json:"platform"`
+	Business bool                  `json:"business"`
+	Callback string                `json:"callback"`
+	Proxy    AccountAddParamSocks5 `json:"proxy"`
+}
+
+type QrcodeCheckParam struct {
+	Account string `json:"account"`
+}
+
 type VfcodeCreateParam struct {
 	Account  string                `json:"account"`
 	Code     string                `json:"code"`

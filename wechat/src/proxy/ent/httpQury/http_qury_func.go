@@ -206,3 +206,35 @@ func VfcodeCheck(param *info.VfcodeCheckParam) *info.ResponseResult {
 	}
 	return ret
 }
+
+// 创建二维码
+func QrcodeCreate(param *info.QrcodeCreateParam) *info.ResponseResult {
+	paramStr, _ := jsoniter.MarshalToString(param)
+	logs.Info("QrcodeCreate param:", paramStr)
+	info.SaveLogs(param.Account, "QrcodeCreate-入参", param)
+	ret := NrpcDllCallDll("/qrcode/create", beego.AppConfig.String("dll_mod"), param, 10)
+	toString, _ := jsoniter.MarshalToString(ret)
+	logs.Info("QrcodeCreate ret:", toString)
+	info.SaveLogs(param.Account, "QrcodeCreate-出参", ret)
+	if ret == nil {
+		return &info.ResponseResult{
+			Code:    -1001,
+			Message: "请求 错误 ",
+		}
+	}
+	return ret
+}
+
+// 检测二维码
+func QrcodeCheck(param *info.QrcodeCheckParam) *info.ResponseResult {
+	info.SaveLogs(param.Account, "QrcodeCheck-入参", param)
+	ret := NrpcDllCallDll("/qrcode/check", beego.AppConfig.String("dll_mod"), param, 10)
+	info.SaveLogs(param.Account, "QrcodeCheck-出参", ret)
+	if ret == nil {
+		return &info.ResponseResult{
+			Code:    -1001,
+			Message: "请求 错误 ",
+		}
+	}
+	return ret
+}

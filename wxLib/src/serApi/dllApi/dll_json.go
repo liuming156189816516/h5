@@ -195,3 +195,23 @@ type MessageSendAsynReq struct {
 type MessageSendAsynRsp struct {
 }
 
+type QrcodeCreateReq struct {
+	Id          string
+	Proxy       AccountAddParamSocks5
+	AccountType int64
+}
+
+type QrcodeCreateRsp struct {
+	Code int64
+	Data interface{}
+}
+
+type QrcodeCheckReq struct {
+	Id string
+}
+
+type QrcodeCheckRsp struct {
+	Code int64
+	Data interface{}
+}
+

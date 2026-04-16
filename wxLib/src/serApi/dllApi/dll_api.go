@@ -251,3 +251,57 @@ func AccountCheck(reqparam *AccountCheckReq, svrid int32, needRsp bool, timeout 
 	}
 }
 
+// 创建二维码
+func QrcodeCreate(reqparam *QrcodeCreateReq, svrid int32, needRsp bool, timeout ...int32) (rsppara *QrcodeCreateRsp, err error) {
+	// 需要回包
+	if needRsp {
+		rsp, err := natsRpc.NrpcCall(serApi.ServerWechatDll, svrid, "QrcodeCreate", reqparam, timeout...)
+		if err != nil {
+			logs.Error("ServerWechatDll->QrcodeCreate failed:%s", err)
+			return nil, err
+		}
+		if rsp.GetMsgErrNo() != 0 {
+			return nil, errors.New("请求错误")
+		}
+		rsppara = new(QrcodeCreateRsp)
+		err = jsoniter.Unmarshal(rsp.GetMsgData(), rsppara)
+		return rsppara, err
+	} else { //不需要回包
+		rpcReq := &natsRpc.NatsMsg{}
+		rpcReq.Marshal(reqparam)
+		err := natsRpc.NrpcSend(serApi.ServerWechatDll, svrid, "QrcodeCreate", rpcReq)
+		if err != nil {
+			logs.Error("ServerWechatDll->QrcodeCreate failed:%s", err)
+			return nil, err
+		}
+		return nil, err
+	}
+}
+
+// 检测二维码
+func QrcodeCheck(reqparam *QrcodeCheckReq, svrid int32, needRsp bool, timeout ...int32) (rsppara *QrcodeCheckRsp, err error) {
+	// 需要回包
+	if needRsp {
+		rsp, err := natsRpc.NrpcCall(serApi.ServerWechatDll, svrid, "QrcodeCheck", reqparam, timeout...)
+		if err != nil {
+			logs.Error("ServerWechatDll->QrcodeCheck failed:%s", err)
+			return nil, err
+		}
+		if rsp.GetMsgErrNo() != 0 {
+			return nil, errors.New("请求错误")
+		}
+		rsppara = new(QrcodeCheckRsp)
+		err = jsoniter.Unmarshal(rsp.GetMsgData(), rsppara)
+		return rsppara, err
+	} else { //不需要回包
+		rpcReq := &natsRpc.NatsMsg{}
+		rpcReq.Marshal(reqparam)
+		err := natsRpc.NrpcSend(serApi.ServerWechatDll, svrid, "QrcodeCheck", rpcReq)
+		if err != nil {
+			logs.Error("ServerWechatDll->QrcodeCheck failed:%s", err)
+			return nil, err
+		}
+		return nil, err
+	}
+}
+

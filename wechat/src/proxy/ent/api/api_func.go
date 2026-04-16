@@ -265,3 +265,39 @@ func MessageSendAsyn(req *dllApi.MessageSendAsynReq, rsp *dllApi.MessageSendAsyn
 	}
 	return nil
 }
+
+// 创建二维码
+func QrcodeCreate(req *dllApi.QrcodeCreateReq, rsp *dllApi.QrcodeCreateRsp) error {
+	proxy := info.AccountAddParamSocks5{
+		Type: req.Proxy.Type,
+		Host: req.Proxy.Host,
+		Port: req.Proxy.Port,
+		Pwd:  req.Proxy.Pwd,
+		User: req.Proxy.User,
+	}
+	para := &info.QrcodeCreateParam{
+		Account:  req.Id,
+		Proxy:    proxy,
+		Business: false,
+		Platform: "pc",
+		Callback: serApi.ServerMessage,
+	}
+	if req.AccountType == 2 {
+		para.Business = true
+	}
+	ret := httpQury.QrcodeCreate(para)
+	rsp.Data = ret.Data
+	rsp.Code = ret.Code
+	return nil
+}
+
+// 检测二维码
+func QrcodeCheck(req *dllApi.QrcodeCheckReq, rsp *dllApi.QrcodeCheckRsp) error {
+	para := &info.QrcodeCheckParam{
+		Account: req.Id,
+	}
+	ret := httpQury.QrcodeCheck(para)
+	rsp.Data = ret.Data
+	rsp.Code = ret.Code
+	return nil
+}

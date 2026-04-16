@@ -104,6 +104,18 @@ func InitApiHandler(os string, ver int) error {
 		return err
 	}
 
+	//创建二维码
+	err = DllHanderNrpc(os, ver, "QrcodeCreate", api.QrcodeCreateHandler)
+	if err != nil {
+		return err
+	}
+
+	//检测二维码
+	err = DllHanderNrpc(os, ver, "QrcodeCheck", api.QrcodeCheckHandler)
+	if err != nil {
+		return err
+	}
+
 	return err
 }
 
