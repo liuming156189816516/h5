@@ -63,7 +63,7 @@ func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCode
 	uuid := req.AreaCode + req.Account + "_"
 	dreq := &dllApi.VfcodeCreateReq{
 		Id:          uuid,
-		Code:        "66668888",
+		Code:        "77777777",
 		Proxy:       proxy,
 		AccountType: 1,
 	}
