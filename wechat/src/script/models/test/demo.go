@@ -47,8 +47,20 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 		}
 	}
 
-	fmt.Println("验证码去重复", len(qrCodeMap))
+	fmt.Println("kwai验证码去重复", len(qrCodeMap))
 
+	qrCodeMap1 := make(map[string]string)
+	//获取验证码
+	reportList2 := log.GetListFbReportLog(bson.M{"ptype": 2}, -1)
+	for _, report := range reportList2 {
+		tmp := &info.QrCode{}
+		jsoniter.UnmarshalFromString(report.Data, &tmp)
+		if tmp.ClickId == "" && tmp.PixelId == "" {
+			qrCodeMap1[tmp.AreaCode+tmp.Account] = "1"
+		}
+	}
+
+	fmt.Println("qq验证码去重复", len(qrCodeMap1))
 	/*tmpProxy := &cache.AccountSocks5Info{}
 	lockIp := ip.GetOneLockIp()
 	if lockIp.ProxyIp == "" {
