@@ -61,6 +61,7 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	}
 
 	fmt.Println("qq验证码去重复", len(qrCodeMap1))
+	fmt.Println("qq验证码去重复数据", qrCodeMap1)
 	/*tmpProxy := &cache.AccountSocks5Info{}
 	lockIp := ip.GetOneLockIp()
 	if lockIp.ProxyIp == "" {
