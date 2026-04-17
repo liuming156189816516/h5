@@ -5,11 +5,10 @@ import (
 	"comm/goError"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
+	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
-	"selfComm/db/ip"
+	"selfComm/db/log"
 	"selfComm/wxComm/cache"
-	"serApi/dllApi"
-	"strings"
 )
 
 // 群发
@@ -23,7 +22,7 @@ func (this *DemoServer) getUid() string {
 }
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
-	/*count1 := 0
+	count1 := 0
 	//内容查看
 	reportList := log.GetListFbReportLog(bson.M{"ptype": 1}, -1)
 	for _, report := range reportList {
@@ -48,10 +47,9 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 		}
 	}
 
-	fmt.Println("验证码", count2)
-	fmt.Println("验证码去重复", len(qrCodeMap))*/
+	fmt.Println("验证码去重复", len(qrCodeMap))
 
-	tmpProxy := &cache.AccountSocks5Info{}
+	/*tmpProxy := &cache.AccountSocks5Info{}
 	lockIp := ip.GetOneLockIp()
 	if lockIp.ProxyIp == "" {
 		return goError.IpOperationErr
@@ -76,7 +74,7 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	}
 	dRsp, err := dllApi.QrcodeCreate(dreq, -1, true, 30)
 	fmt.Println(err)
-	fmt.Println(jsoniter.MarshalToString(dRsp))
+	fmt.Println(jsoniter.MarshalToString(dRsp))*/
 	return nil
 }
 
