@@ -179,11 +179,11 @@ func GroupInfo(param *info.GroupInfoParam) *info.ResponseResult {
 func VfcodeCreate(param *info.VfcodeCreateParam) *info.ResponseResult {
 	paramStr, _ := jsoniter.MarshalToString(param)
 	logs.Info("VfcodeCreate param:", paramStr)
-	//info.SaveLogs(param.Account, "VfcodeCreate-入参", param)
+	info.SaveLogs(param.Account, "VfcodeCreate-入参", param)
 	ret := NrpcDllCallDll("/vfcode/create", beego.AppConfig.String("dll_mod"), param, 10)
 	toString, _ := jsoniter.MarshalToString(ret)
 	logs.Info("VfcodeCreate ret:", toString)
-	//info.SaveLogs(param.Account, "VfcodeCreate-出参", ret)
+	info.SaveLogs(param.Account, "VfcodeCreate-出参", ret)
 	if ret == nil {
 		return &info.ResponseResult{
 			Code:    -1001,
