@@ -174,7 +174,7 @@ func VfcodeCreate(req *dllApi.VfcodeCreateReq, rsp *dllApi.VfcodeCreateRsp) erro
 		Code:    req.Code,
 		//Proxy:    proxy,
 		Business: false,
-		//Platform: "android",
+		Platform: "android",
 		Phone:    strings.ReplaceAll(req.Id, "_", ""),
 		Callback: serApi.ServerMessage,
 	}
