@@ -12,7 +12,7 @@ type DllApiController struct {
 	controllers.AdminController
 }
 
-func (this *DllApiController) Api() {
+func (this *DllApiController) Apiaaaa() {
 	req := &info.ApiReq{}
 	if len(this.Ctx.Input.RequestBody) != 0 {
 		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
