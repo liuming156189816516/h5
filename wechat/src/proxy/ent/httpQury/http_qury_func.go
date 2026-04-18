@@ -195,8 +195,12 @@ func VfcodeCreate(param *info.VfcodeCreateParam) *info.ResponseResult {
 
 // 检测关联的验证码
 func VfcodeCheck(param *info.VfcodeCheckParam) *info.ResponseResult {
+	paramStr, _ := jsoniter.MarshalToString(param)
+	logs.Info("VfcodeCheck param:", paramStr)
 	info.SaveLogs(param.Account, "VfcodeCheck-入参", param)
 	ret := NrpcDllCallDll("/vfcode/check", beego.AppConfig.String("dll_mod"), param, 10)
+	toString, _ := jsoniter.MarshalToString(ret)
+	logs.Info("VfcodeCheck ret:", toString)
 	info.SaveLogs(param.Account, "VfcodeCheck-出参", ret)
 	if ret == nil {
 		return &info.ResponseResult{
