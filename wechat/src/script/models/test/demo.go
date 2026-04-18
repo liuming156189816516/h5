@@ -58,7 +58,9 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	}
 
 	fmt.Println("kwai验证码去重复", len(kwCodeMap))
+	fmt.Println("kwai验证码去重复数据", kwCodeMap)
 	fmt.Println("fb验证码去重复", len(fbCodeMap))
+	fmt.Println("fb验证码去重复数据", fbCodeMap)
 
 	/*tmpProxy := &cache.AccountSocks5Info{}
 	lockIp := ip.GetOneLockIp()
