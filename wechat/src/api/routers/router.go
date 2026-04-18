@@ -26,7 +26,8 @@ func init() {
 	InitRouter()
 }
 func InitRouter() {
-	beego.AutoRouter(&api.ApiController{})
+	beego.AutoRouter(&api.DemoController{})
+
 	beego.InsertFilter("/ae/*", beego.BeforeStatic, func(ctx *context.Context) {
 		ctx.Output.Header("Cache-control", "max-age=5")
 		ctx.Output.Header("Content-Type", "application/download")
