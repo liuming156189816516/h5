@@ -78,7 +78,7 @@ func main() {
 	}
 
 	//启动服务器
-	l.Println("start script")
+	l.Println("start api")
 	beego.Run()
 
 }
