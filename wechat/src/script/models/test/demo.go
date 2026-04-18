@@ -3,8 +3,6 @@ package test
 import (
 	"comm/comm"
 	"comm/goError"
-	"fmt"
-	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
 	"selfComm/db/log"
@@ -22,18 +20,19 @@ func (this *DemoServer) getUid() string {
 }
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
-	count1 := 0
-	//内容查看
+	log.DelFbReportLog(bson.M{})
+
+	/*//内容查看
 	reportList := log.GetListFbReportLog(bson.M{"ptype": 1}, -1)
 	for _, report := range reportList {
 		tmp := &info.FbData{}
 		jsoniter.UnmarshalFromString(report.Data, &tmp)
 		if tmp.ClickId != "" {
-			count1++
+
 		}
 	}
-	fmt.Println("内容查看：", count1)
-	count2 := 0
+	fmt.Println("kwai内容查看去除重复：", count1)
+	fmt.Println("kwai内容查看去除重复：", count1)
 
 	qrCodeMap := make(map[string]string)
 	//获取验证码
@@ -61,7 +60,7 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	}
 
 	fmt.Println("qq验证码去重复", len(qrCodeMap1))
-	fmt.Println("qq验证码去重复数据", qrCodeMap1)
+	fmt.Println("qq验证码去重复数据", qrCodeMap1)*/
 	/*tmpProxy := &cache.AccountSocks5Info{}
 	lockIp := ip.GetOneLockIp()
 	if lockIp.ProxyIp == "" {
