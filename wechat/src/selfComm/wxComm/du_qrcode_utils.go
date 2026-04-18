@@ -27,7 +27,7 @@ type QrcodeUtilsRsp struct {
 
 // 杜哥获取验证码接口
 func QrcodeUtils(phone string) *QrcodeUtilsRsp {
-	api := "http://10.0.2.50:8787/api/login"
+	api := "http://18.229.191.11:8787/api/login"
 	headerMap := make(map[string]string)
 	headerMap["Content-Type"] = "application/json"
 
