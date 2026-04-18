@@ -4,6 +4,7 @@ import (
 	info "api/webstru"
 	"comm/comm"
 	"comm/goError"
+	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"selfComm/db/log"
@@ -23,6 +24,12 @@ func (this *ApiServer) getUid() string {
 }
 
 func (this *ApiServer) Api(req *info.ApiReq, rsp *info.NullRsp) *goError.ErrRsp {
+
+	fmt.Println(jsoniter.MarshalToString(req))
+
+	if req.Account == "" {
+		return goError.GLOBAL_INVALIDPARAM
+	}
 
 	if req.Ptype == 1 {
 
