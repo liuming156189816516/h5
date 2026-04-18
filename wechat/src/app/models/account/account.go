@@ -4,11 +4,8 @@ import (
 	info "app/webstru"
 	"comm/comm"
 	"comm/goError"
-	jsoniter "github.com/json-iterator/go"
-	"gopkg.in/mgo.v2/bson"
-	"selfComm/db/log"
-	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
+	"serApi/dllApi"
 )
 
 // 数据包
@@ -26,7 +23,7 @@ func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCode
 	/*paramStr, _ := jsoniter.MarshalToString(req)
 	logs.Info("GetQrCode param: " + paramStr)*/
 	//kwai发送访问回调
-	tmp := &log.FbReportLog{}
+	/*tmp := &log.FbReportLog{}
 	tmp.Id = bson.NewObjectId()
 	tmp.Ptype = 2
 	reqStr, _ := jsoniter.MarshalToString(req)
@@ -44,54 +41,53 @@ func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCode
 		rsp.Code = result.PairingCode
 	} else {
 		return goError.AccountCodeLoginErr
-	}
+	}*/
 
-	/*
-		tmpProxy := &cache.AccountSocks5Info{}
-		lockIpId := ""
-		//获取ip
-		lockIp := ip.GetOneLockIp()
-		if lockIp.ProxyIp == "" {
-			return goError.IpOperationErr
-		}
-		split := strings.Split(lockIp.ProxyIp, ":")
-		tmpProxy.User = lockIp.ProxyUser
-		tmpProxy.Pwd = lockIp.ProxyPwd
-		tmpProxy.Type = lockIp.ProxyType
-		tmpProxy.Host = split[0]
-		tmpProxy.Port = split[1]
-		lockIpId = lockIp.Id.Hex()
-		proxy := dllApi.AccountAddParamSocks5{}
-		proxy.User = tmpProxy.User
-		proxy.Pwd = tmpProxy.Pwd
-		proxy.Host = tmpProxy.Host
-		proxy.Port = tmpProxy.Port
-		proxy.Type = tmpProxy.Type
-		uuid := req.AreaCode + req.Account + "_"
-		dreq := &dllApi.VfcodeCreateReq{
-			Id:          uuid,
-			Code:        "77777777",
-			Proxy:       proxy,
-			AccountType: 1,
-		}
-		dRsp, _ := dllApi.VfcodeCreate(dreq, -1, true, 30)
-		if dRsp != nil && dRsp.QrCode != "" {
-			rsp.Code = dRsp.QrCode
-			taskData := info.CheckQrcodeTaskData{}
-			taskData.User = tmpProxy.User
-			taskData.Pwd = tmpProxy.Pwd
-			taskData.Host = tmpProxy.Host
-			taskData.Port = tmpProxy.Port
-			taskData.Type = tmpProxy.Type
-			taskData.ProxyId = lockIpId
-			taskData.AccountType = 1
-			taskData.AreaCode = req.AreaCode
-			taskData.PixelId = req.PixelId
-			taskData.ClickId = req.ClickId
-			cache.SetCheckQrcodeTask(uuid, taskData)
-		} else {
-			return goError.AccountCodeLoginErr
-		}*/
+	/*tmpProxy := &cache.AccountSocks5Info{}
+	lockIpId := ""
+	//获取ip
+	lockIp := ip.GetOneLockIp()
+	if lockIp.ProxyIp == "" {
+		return goError.IpOperationErr
+	}
+	split := strings.Split(lockIp.ProxyIp, ":")
+	tmpProxy.User = lockIp.ProxyUser
+	tmpProxy.Pwd = lockIp.ProxyPwd
+	tmpProxy.Type = lockIp.ProxyType
+	tmpProxy.Host = split[0]
+	tmpProxy.Port = split[1]
+	lockIpId = lockIp.Id.Hex()
+	proxy := dllApi.AccountAddParamSocks5{}
+	proxy.User = tmpProxy.User
+	proxy.Pwd = tmpProxy.Pwd
+	proxy.Host = tmpProxy.Host
+	proxy.Port = tmpProxy.Port
+	proxy.Type = tmpProxy.Type*/
+	uuid := req.AreaCode + req.Account + "_"
+	dreq := &dllApi.VfcodeCreateReq{
+		Id:   uuid,
+		Code: "77777777",
+		//Proxy:       proxy,
+		AccountType: 1,
+	}
+	dRsp, _ := dllApi.VfcodeCreate(dreq, -1, true, 30)
+	if dRsp != nil && dRsp.QrCode != "" {
+		rsp.Code = dRsp.QrCode
+		taskData := info.CheckQrcodeTaskData{}
+		/*taskData.User = tmpProxy.User
+		taskData.Pwd = tmpProxy.Pwd
+		taskData.Host = tmpProxy.Host
+		taskData.Port = tmpProxy.Port
+		taskData.Type = tmpProxy.Type
+		taskData.ProxyId = lockIpId*/
+		taskData.AccountType = 1
+		taskData.AreaCode = req.AreaCode
+		taskData.PixelId = req.PixelId
+		taskData.ClickId = req.ClickId
+		cache.SetCheckQrcodeTask(uuid, taskData)
+	} else {
+		return goError.AccountCodeLoginErr
+	}
 
 	return nil
 }

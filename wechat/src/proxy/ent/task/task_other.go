@@ -31,23 +31,23 @@ func TaskUserLoginEventHandler(msg *natsRpc.NatsMsg) int32 {
 	for _, accountStr := range req.Account {
 		accInfo := cache.GetAccountInfo(accountStr)
 		token := accInfo.Token
-		proxyIp := cache.GetProxyIp(accountStr)
+		/*proxyIp := cache.GetProxyIp(accountStr)
 		proxy := info.AccountAddParamSocks5{
 			Type: proxyIp.Type,
 			Host: proxyIp.Host,
 			Port: proxyIp.Port,
 			User: proxyIp.User,
 			Pwd:  proxyIp.Pwd,
-		}
+		}*/
 		business := true
 		if accInfo.AccountType == 1 {
 			business = false
 		}
 		param := info.AccountLoginParam{
-			Account:               accInfo.Account,
-			Token:                 token,
-			Business:              business,
-			Proxy:                 proxy,
+			Account:  accInfo.Account,
+			Token:    token,
+			Business: business,
+			//Proxy:                 proxy,
 			DisableDecryptMessage: int64(3),
 			DisableNotifyReceipt:  int64(2),
 			Callback:              serApi.ServerMessage,
