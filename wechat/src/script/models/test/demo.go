@@ -24,7 +24,7 @@ func (this *DemoServer) getUid() string {
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
 	fmt.Println("哈哈哈哈")
-	//count()
+	count()
 	//testNoProxy(req.Phone)
 	return nil
 }
