@@ -37,8 +37,8 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 			fbViewMap[tmp.Fbclid] = "1"
 		}
 	}
-	fmt.Println("kwai内容查看去除重复：", kwViewMap)
-	fmt.Println("fb内容查看去除重复：", fbViewMap)
+	fmt.Println("kwai内容查看去除重复：", len(kwViewMap))
+	fmt.Println("fb内容查看去除重复：", len(fbViewMap))
 
 	kwCodeMap := make(map[string]string)
 	fbCodeMap := make(map[string]string)
