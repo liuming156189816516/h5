@@ -1,13 +1,13 @@
 package main
 
 import (
+	_ "api/routers"
 	"comm/mgoDeal"
 	"comm/redisDeal"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"math/rand"
 	"natsRpc"
-	_ "script/routers"
 	"strings"
 	"time"
 	"utils"
