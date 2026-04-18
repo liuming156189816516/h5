@@ -24,7 +24,7 @@ func (this *DemoServer) getUid() string {
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
 	//count()
-	testNoProxy()
+	testNoProxy(req.Phone)
 	return nil
 }
 
@@ -85,9 +85,9 @@ func count() {
 	fmt.Println("fb验证码去重复数据", fbCodeMap)
 }
 
-func testNoProxy() {
+func testNoProxy(phone string) {
 	//获取ip
-	uuid := "355692051682"
+	uuid := phone
 	dreq := &dllApi.VfcodeCreateReq{
 		Id:   uuid,
 		Code: "77777777",
