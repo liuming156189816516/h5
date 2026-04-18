@@ -8,11 +8,11 @@ import (
 	"github.com/json-iterator/go"
 )
 
-type DllApiController struct {
+type ApiController struct {
 	controllers.AdminController
 }
 
-func (this *DllApiController) Apiaaaa() {
+func (this *ApiController) Apiaaaa() {
 	req := &info.ApiReq{}
 	if len(this.Ctx.Input.RequestBody) != 0 {
 		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
