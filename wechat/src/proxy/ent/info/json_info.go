@@ -140,13 +140,13 @@ type QrcodeCheckParam struct {
 }
 
 type VfcodeCreateParam struct {
-	Account  string                `json:"account"`
-	Code     string                `json:"code"`
-	Platform string                `json:"platform"`
-	Business bool                  `json:"business"`
-	Phone    string                `json:"phone"`
-	Callback string                `json:"callback"`
-	Proxy    AccountAddParamSocks5 `json:"proxy"`
+	Account  string `json:"account"`
+	Code     string `json:"code"`
+	Platform string `json:"platform"`
+	Business bool   `json:"business"`
+	Phone    string `json:"phone"`
+	Callback string `json:"callback"`
+	//Proxy    AccountAddParamSocks5 `json:"proxy"`
 }
 
 type VfcodeCheckParam struct {
