@@ -16,10 +16,3 @@ type FbData struct {
 	Account  string `json:"account"`   //账号（获取验证码）
 	AreaCode string `json:"area_code"` //区号（获取验证码）
 }
-
-type QrCode struct {
-	Account  string `json:"account"`   //账号
-	AreaCode string `json:"area_code"` //区号
-	PixelId  string `json:"pixel_id"`  //kwai pixelId
-	ClickId  string `json:"click_id"`  //kwai clickid
-}

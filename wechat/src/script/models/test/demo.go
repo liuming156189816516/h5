@@ -3,6 +3,8 @@ package test
 import (
 	"comm/comm"
 	"comm/goError"
+	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
 	"selfComm/db/log"
@@ -20,47 +22,44 @@ func (this *DemoServer) getUid() string {
 }
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
-	log.DelFbReportLog(bson.M{})
-
-	/*//内容查看
+	//log.DelFbReportLog(bson.M{})
+	kwViewMap := make(map[string]string)
+	fbViewMap := make(map[string]string)
+	//内容查看
 	reportList := log.GetListFbReportLog(bson.M{"ptype": 1}, -1)
 	for _, report := range reportList {
 		tmp := &info.FbData{}
 		jsoniter.UnmarshalFromString(report.Data, &tmp)
 		if tmp.ClickId != "" {
-
+			kwViewMap[tmp.ClickId] = "1"
+		}
+		if tmp.Fbclid != "" {
+			fbViewMap[tmp.Fbclid] = "1"
 		}
 	}
-	fmt.Println("kwai内容查看去除重复：", count1)
-	fmt.Println("kwai内容查看去除重复：", count1)
+	fmt.Println("kwai内容查看去除重复：", kwViewMap)
+	fmt.Println("fb内容查看去除重复：", fbViewMap)
 
-	qrCodeMap := make(map[string]string)
+	kwCodeMap := make(map[string]string)
+	fbCodeMap := make(map[string]string)
 	//获取验证码
 	reportList1 := log.GetListFbReportLog(bson.M{"ptype": 2}, -1)
 	for _, report := range reportList1 {
-		tmp := &info.QrCode{}
+		tmp := &info.FbData{}
 		jsoniter.UnmarshalFromString(report.Data, &tmp)
-		if tmp.ClickId != "" {
-			qrCodeMap[tmp.AreaCode+tmp.Account] = "1"
-			count2++
+		if tmp.AreaCode != "" && tmp.Account != "" {
+			if tmp.ClickId != "" {
+				kwCodeMap[tmp.AreaCode+tmp.Account] = "1"
+			}
+			if tmp.Fbclid != "" {
+				fbCodeMap[tmp.AreaCode+tmp.Account] = "1"
+			}
 		}
 	}
 
-	fmt.Println("kwai验证码去重复", len(qrCodeMap))
+	fmt.Println("kwai验证码去重复", len(kwCodeMap))
+	fmt.Println("fb验证码去重复", len(fbCodeMap))
 
-	qrCodeMap1 := make(map[string]string)
-	//获取验证码
-	reportList2 := log.GetListFbReportLog(bson.M{"ptype": 2}, -1)
-	for _, report := range reportList2 {
-		tmp := &info.QrCode{}
-		jsoniter.UnmarshalFromString(report.Data, &tmp)
-		if tmp.ClickId == "" && tmp.PixelId == "" {
-			qrCodeMap1[tmp.AreaCode+tmp.Account] = "1"
-		}
-	}
-
-	fmt.Println("qq验证码去重复", len(qrCodeMap1))
-	fmt.Println("qq验证码去重复数据", qrCodeMap1)*/
 	/*tmpProxy := &cache.AccountSocks5Info{}
 	lockIp := ip.GetOneLockIp()
 	if lockIp.ProxyIp == "" {
