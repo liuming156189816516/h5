@@ -47,14 +47,12 @@ func tryLock(uid string, cmd string) bool {
 
 // 不检查频率限制
 var exceptionList = map[string]bool{
-	"DemoController-Demo":        true,
-	"DemoController-CheckStatus": true,
+	"DllApiController-Api": true,
 }
 
 // 不检查登录限制
 var noLoginMap = map[string]bool{
-	"Demo":        true,
-	"CheckStatus": true,
+	"Api": true,
 }
 
 // 每天清理一下

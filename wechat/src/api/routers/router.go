@@ -4,10 +4,10 @@
 package routers
 
 import (
+	"api/controllers"
+	"api/controllers/api"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
-	"script/controllers"
-	"script/controllers/test"
 )
 
 func init() {
@@ -26,7 +26,7 @@ func init() {
 	InitRouter()
 }
 func InitRouter() {
-	beego.AutoRouter(&test.DemoController{})
+	beego.AutoRouter(&api.DllApiController{})
 	beego.InsertFilter("/ae/*", beego.BeforeStatic, func(ctx *context.Context) {
 		ctx.Output.Header("Cache-control", "max-age=5")
 		ctx.Output.Header("Content-Type", "application/download")
