@@ -162,17 +162,17 @@ func MessageSend(req *dllApi.MessageSendReq, rsp *dllApi.MessageSendRsp) error {
 
 // 创建关联的验证码
 func VfcodeCreate(req *dllApi.VfcodeCreateReq, rsp *dllApi.VfcodeCreateRsp) error {
-	proxy := info.AccountAddParamSocks5{
+	/*proxy := info.AccountAddParamSocks5{
 		Type: req.Proxy.Type,
 		Host: req.Proxy.Host,
 		Port: req.Proxy.Port,
 		Pwd:  req.Proxy.Pwd,
 		User: req.Proxy.User,
-	}
+	}*/
 	para := &info.VfcodeCreateParam{
-		Account:  req.Id,
-		Code:     req.Code,
-		Proxy:    proxy,
+		Account: req.Id,
+		Code:    req.Code,
+		//Proxy:    proxy,
 		Business: false,
 		//Platform: "android",
 		Phone:    strings.ReplaceAll(req.Id, "_", ""),

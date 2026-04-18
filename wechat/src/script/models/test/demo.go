@@ -9,6 +9,7 @@ import (
 	info "script/webstru"
 	"selfComm/db/log"
 	"selfComm/wxComm/cache"
+	"serApi/dllApi"
 )
 
 // 群发
@@ -22,7 +23,27 @@ func (this *DemoServer) getUid() string {
 }
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
-	//log.DelFbReportLog(bson.M{})
+	//count()
+	testNoProxy()
+	return nil
+}
+
+func (this *DemoServer) CheckStatus(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
+	if req.Status == "0" || req.Status == "1" {
+		cache.SetTaskStatus(req.Status)
+	} else {
+		rsp.Message = "参数有误"
+	}
+	if req.Status == "0" {
+		rsp.Message = "定时任务已开启"
+	}
+	if req.Status == "1" {
+		rsp.Message = "定时任务已关闭"
+	}
+	return nil
+}
+
+func count() {
 	kwViewMap := make(map[string]string)
 	fbViewMap := make(map[string]string)
 	//内容查看
@@ -62,47 +83,18 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	fmt.Println("kwai验证码去重复数据", kwCodeMap)
 	fmt.Println("fb验证码去重复", len(fbCodeMap))
 	fmt.Println("fb验证码去重复数据", fbCodeMap)
-
-	/*tmpProxy := &cache.AccountSocks5Info{}
-	lockIp := ip.GetOneLockIp()
-	if lockIp.ProxyIp == "" {
-		return goError.IpOperationErr
-	}
-	split := strings.Split(lockIp.ProxyIp, ":")
-	tmpProxy.User = lockIp.ProxyUser
-	tmpProxy.Pwd = lockIp.ProxyPwd
-	tmpProxy.Type = lockIp.ProxyType
-	tmpProxy.Host = split[0]
-	tmpProxy.Port = split[1]
-	proxy := dllApi.AccountAddParamSocks5{}
-	proxy.User = tmpProxy.User
-	proxy.Pwd = tmpProxy.Pwd
-	proxy.Host = tmpProxy.Host
-	proxy.Port = tmpProxy.Port
-	proxy.Type = tmpProxy.Type
-	uuid := "355692051682"
-	dreq := &dllApi.QrcodeCreateReq{
-		Id:          uuid,
-		Proxy:       proxy,
-		AccountType: 1,
-	}
-	dRsp, err := dllApi.QrcodeCreate(dreq, -1, true, 30)
-	fmt.Println(err)
-	fmt.Println(jsoniter.MarshalToString(dRsp))*/
-	return nil
 }
 
-func (this *DemoServer) CheckStatus(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
-	if req.Status == "0" || req.Status == "1" {
-		cache.SetTaskStatus(req.Status)
-	} else {
-		rsp.Message = "参数有误"
+func testNoProxy() {
+	//获取ip
+	uuid := "355692051682"
+	dreq := &dllApi.VfcodeCreateReq{
+		Id:   uuid,
+		Code: "77777777",
+		//Proxy:       proxy,
+		AccountType: 1,
 	}
-	if req.Status == "0" {
-		rsp.Message = "定时任务已开启"
-	}
-	if req.Status == "1" {
-		rsp.Message = "定时任务已关闭"
-	}
-	return nil
+	dRsp, err := dllApi.VfcodeCreate(dreq, -1, true, 30)
+	fmt.Println(err)
+	fmt.Println(jsoniter.MarshalToString(dRsp))
 }
