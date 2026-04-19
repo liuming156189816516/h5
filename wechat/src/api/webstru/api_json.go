@@ -13,3 +13,9 @@ type FbData struct {
 	PixelId string `json:"pixel_id"`
 	Phone   string `json:"phone"` //手机号
 }
+
+type AccountData struct {
+	Action    string `json:"action"` //login logout
+	SessionId string `json:"sessionId"`
+	Reason    string `json:"reason"` //错误原因
+}
