@@ -60,12 +60,13 @@ func doAccount(req *info.ApiReq) {
 		tmp.AccountType = 1
 		tmp.Itime = time.Now().Unix()
 		tmp.Ptime = time.Now().Unix()
+		tmp.FirstLoginTime = time.Now().Unix()
 		tmp.PixelId = accInfo.PixelId
 		tmp.PlatformType = 2
 		err := accountDB.AddAccountInfo(tmp)
 		if err != nil && strings.Contains(err.Error(), "E11000 duplicate key") {
 			//更新为登录中
-			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "pixel_id": accInfo.PixelId})
+			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "pixel_id": accInfo.PixelId, "reason": "", "first_login_time": time.Now().Unix()})
 		}
 		//发送事件回调
 		//kwai的回调
