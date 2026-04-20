@@ -84,26 +84,31 @@ func doAccount(req *info.ApiReq) {
 				wxComm.KwaiPlace(accInfo.ClickId, "EVENT_COMPLETE_REGISTRATION")
 			}()
 		}
+		fbFlag := false
 		//fb的回调
 		for key, _ := range wxComm.PixelTokens {
 			if strings.Contains(key, accInfo.PixelId) {
-				go func() {
-					fbData := &info.FbData{}
-					fbData.Phone = req.Account
-					fbData.PixelId = accInfo.PixelId
-					tmpFb := &log.FbReportLog{}
-					tmpFb.Id = bson.NewObjectId()
-					tmpFb.Ptype = 3
-					data, _ := jsoniter.MarshalToString(fbData)
-					tmpFb.Data = data
-					log.AddFbReportLog(tmpFb)
-					fbInfo := cache.FbReport{
-						Ptype: 3,
-						Phone: req.Account,
-					}
-					cache.SetFbReport(&fbInfo)
-				}()
+				fbFlag = true
+				break
 			}
+		}
+		if fbFlag {
+			go func() {
+				fbData := &info.FbData{}
+				fbData.Phone = req.Account
+				fbData.PixelId = accInfo.PixelId
+				tmpFb := &log.FbReportLog{}
+				tmpFb.Id = bson.NewObjectId()
+				tmpFb.Ptype = 3
+				data, _ := jsoniter.MarshalToString(fbData)
+				tmpFb.Data = data
+				log.AddFbReportLog(tmpFb)
+				fbInfo := cache.FbReport{
+					Ptype: 3,
+					Phone: req.Account,
+				}
+				cache.SetFbReport(&fbInfo)
+			}()
 		}
 	}
 
