@@ -10,6 +10,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	accountDB "selfComm/db/account"
 	"selfComm/db/log"
+	"selfComm/db/sendmsg"
 	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
 	"strings"
@@ -111,12 +112,13 @@ func doAccount(req *info.ApiReq) {
 				cache.SetFbReport(&fbInfo)
 			}()
 		}
-		go sendMsg(accountData.SessionId)
+		go sendMsg(req.Account, accountData.SessionId)
 	}
 
 	if accountData.Action == "logout" {
 		cache.SetAccountStatus(req.Account, 1)
 		accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"reason": accountData.Reason, "status": int64(1), "offline_time": time.Now().Unix()})
+		sendmsg.UpSendMsgInfo(bson.M{"account": req.Account}, bson.M{"account_status": 1})
 	}
 
 }
@@ -127,25 +129,49 @@ func doMessage(req *info.ApiReq) {
 }
 
 //发送消息
-func sendMsg(sessionId string) {
+func sendMsg(account, sessionId string) {
 	config := cache.GetTaskConfig("global")
 	mList := config.MaterialList
 	material := mList[0]
-	target := ""
-	targetStr := cache.SpopDataPackList(config.DataPackId)
-	if targetStr == "" {
-		logs.Info("粉丝数据不足")
+
+	tmp2 := &sendmsg.SendMsgInfo{}
+	tmp2.Id = bson.NewObjectId()
+	tmp2.Account = account
+	tmp2.AccountStatus = 2
+	err := sendmsg.AddSendMsgInfo(tmp2)
+	if err != nil && strings.Contains(err.Error(), "E11000 duplicate key") {
+		//更新为登录成功
+		sendmsg.UpSendMsgInfo(bson.M{"account": account}, bson.M{"account_status": 2})
+	}
+
+	// 消息发送的开关
+	if cache.GetTaskStatus() == "1" {
 		return
 	}
 
-	split := strings.Split(targetStr, "-")
-	if len(split) > 0 {
-		target = split[0]
-	}
-	msgResult, err := wxComm.SendMsgUtils(sessionId, target, material)
-	//还数据
-	if err != nil || !msgResult.Ok {
-		cache.SaddDataPackList(config.DataPackId, target)
-	}
+	//如果账号在线
+	for cache.GetAccountStatus(account) == 2 {
+		target := ""
+		targetStr := cache.SpopDataPackList(config.DataPackId)
+		if targetStr == "" {
+			logs.Info("粉丝数据不足")
+			continue
+		}
+		split := strings.Split(targetStr, "-")
+		if len(split) > 0 {
+			target = split[0]
+		}
+		msgResult, err1 := wxComm.SendMsgUtils(sessionId, target, material)
 
+		// 发送成功
+		if err1 == nil && msgResult.Ok {
+			cache.IncSendMsgTaskInfoCount(cache.SuccessNum, account, 1)
+		}
+
+		//发送失败，还数据
+		if err1 != nil || !msgResult.Ok {
+			cache.SaddDataPackList(config.DataPackId, target)
+		}
+
+	}
 }
