@@ -39,18 +39,7 @@ type ExternalAdReply struct {
 }
 
 type SendMsgUtilsRsp struct {
-	SessionID                 string `json:"sessionId"`
-	Phone                     string `json:"phone"`
-	PairingCode               string `json:"pairingCode"`
-	LastPairingCodeFromServer string `json:"lastPairingCodeFromServer"`
-	AlreadyConnected          bool   `json:"alreadyConnected"`
-	Status                    struct {
-		ID          string      `json:"id"`
-		Connection  string      `json:"connection"`
-		QRAvailable bool        `json:"qrAvailable"`
-		User        interface{} `json:"user"` // 这里可能为 null，先用 interface{}
-	} `json:"status"`
-	Hint string `json:"hint"`
+	Ok bool `json:"ok"`
 }
 
 // 杜哥发送消息接口
