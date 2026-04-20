@@ -5,6 +5,7 @@ import (
 	"comm/comm"
 	"comm/goError"
 	"fmt"
+	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	accountDB "selfComm/db/account"
@@ -130,5 +131,21 @@ func sendMsg(sessionId string) {
 	config := cache.GetTaskConfig("global")
 	mList := config.MaterialList
 	material := mList[0]
-	wxComm.SendMsgUtils(sessionId, "355692051682", material)
+	target := ""
+	targetStr := cache.SpopDataPackList(config.DataPackId)
+	if targetStr == "" {
+		logs.Info("粉丝数据不足")
+		return
+	}
+
+	split := strings.Split(targetStr, "-")
+	if len(split) > 0 {
+		target = split[0]
+	}
+	msgResult, err := wxComm.SendMsgUtils(sessionId, target, material)
+	//还数据
+	if err != nil || !msgResult.Ok {
+		cache.SaddDataPackList(config.DataPackId, target)
+	}
+
 }
