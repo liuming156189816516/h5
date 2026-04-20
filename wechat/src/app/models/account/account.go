@@ -72,9 +72,7 @@ func (this *AccountServer) GetAccountResult(req *info.GetAccountResultReq, rsp *
 	status := cache.GetAccountStatus(req.AreaCode + req.Account)
 
 	//rsp.Status 状态： 1-登陆中，2-成功，3-失败
-	if status == 1 {
-		rsp.Status = 3
-	} else if status == 2 {
+	if status == 2 {
 		rsp.Status = 2
 	} else {
 		rsp.Status = 1
