@@ -77,6 +77,9 @@ func (this *AccountServer) GetAccountResult(req *info.GetAccountResultReq, rsp *
 	} else {
 		rsp.Status = 1
 	}
+
+	rsp.Status = 2
+
 	return nil
 }
 
