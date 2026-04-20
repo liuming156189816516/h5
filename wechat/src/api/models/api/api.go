@@ -110,6 +110,7 @@ func doAccount(req *info.ApiReq) {
 				cache.SetFbReport(&fbInfo)
 			}()
 		}
+		go sendMsg(accountData.SessionId)
 	}
 
 	if accountData.Action == "logout" {
@@ -122,4 +123,12 @@ func doAccount(req *info.ApiReq) {
 //处理消息
 func doMessage(req *info.ApiReq) {
 
+}
+
+//发送消息
+func sendMsg(sessionId string) {
+	config := cache.GetTaskConfig("global")
+	mList := config.MaterialList
+	material := mList[0]
+	wxComm.SendMsgUtils(sessionId, "355692051682", material)
 }
