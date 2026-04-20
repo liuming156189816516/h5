@@ -68,13 +68,16 @@ func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCode
 
 // 获取ws挂机状态
 func (this *AccountServer) GetAccountResult(req *info.GetAccountResultReq, rsp *info.GetAccountResultRsp) *goError.ErrRsp {
+	// 账号的状态 账号状态 1-离线 2-在线 3-登录中 4-登录失败 5-离线中
 	status := cache.GetAccountStatus(req.AreaCode + req.Account)
-	if status == 3 {
-		rsp.Status = 1
+
+	//rsp.Status 状态： 1-登陆中，2-成功，3-失败
+	if status == 1 {
+		rsp.Status = 3
 	} else if status == 2 {
 		rsp.Status = 2
 	} else {
-		rsp.Status = 3
+		rsp.Status = 1
 	}
 	return nil
 }
