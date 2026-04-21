@@ -23,8 +23,12 @@ func (this *DemoServer) getUid() string {
 }
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
-	fmt.Println("哈哈哈哈")
-	count()
+
+	log.DelFbReportLog(bson.M{})
+	fmt.Println("==============>执行完成")
+
+	//fmt.Println("哈哈哈哈")
+	//count()
 	//testNoProxy(req.Phone)
 	return nil
 }
