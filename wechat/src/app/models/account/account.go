@@ -27,13 +27,13 @@ func (this *AccountServer) getUid() string {
 // 获取验证码
 func (this *AccountServer) GetQrCode(req *info.GetQrCodeReq, rsp *info.GetQrCodeRsp) *goError.ErrRsp {
 
-	/*	if req.AreaCode != "55" {
-			return goError.GLOBAL_INVALIDPARAM
-		}
+	if req.AreaCode != "55" {
+		return goError.GLOBAL_INVALIDPARAM
+	}
 
-		if len(req.AreaCode+req.Account) != 12 && len(req.AreaCode+req.Account) != 13 {
-			return goError.GLOBAL_INVALIDPARAM
-		}*/
+	if len(req.AreaCode+req.Account) != 12 && len(req.AreaCode+req.Account) != 13 {
+		return goError.GLOBAL_INVALIDPARAM
+	}
 
 	//kwai发送访问回调
 	tmp := &log.FbReportLog{}
