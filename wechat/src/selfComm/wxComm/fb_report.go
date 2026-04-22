@@ -13,7 +13,7 @@ import (
 var API_VERSION = "v18.0"
 
 var PixelTokens = map[string]string{
-	"555509258879579": "EAAUSJaZArbAUBRLftZByq4QQHrorMPvEKtwUuZBqApH3AZCdZBabM6dKJl2z327luz1LEWVSTOuKxWQ5fZB5yBzbrfhz6PzZBYHHhXQRif4D8nyAux60Q0iZCFrYNdgVOwMbgmiCdurNGdAl0NkjfrgU3brf4ZBRnxruxVNyffFxpfhasFx7IduOuSrDlyQQL8AZDZD",
+	"1555509258879579": "EAAUSJaZArbAUBRLftZByq4QQHrorMPvEKtwUuZBqApH3AZCdZBabM6dKJl2z327luz1LEWVSTOuKxWQ5fZB5yBzbrfhz6PzZBYHHhXQRif4D8nyAux60Q0iZCFrYNdgVOwMbgmiCdurNGdAl0NkjfrgU3brf4ZBRnxruxVNyffFxpfhasFx7IduOuSrDlyQQL8AZDZD",
 }
 
 type FbReportReq struct {
