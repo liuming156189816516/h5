@@ -9,7 +9,6 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	accountDB "selfComm/db/account"
-	"selfComm/db/log"
 	"selfComm/db/sendmsg"
 	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
@@ -70,48 +69,48 @@ func doAccount(req *info.ApiReq) {
 			//更新为登录中
 			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "pixel_id": accInfo.PixelId, "reason": "", "first_login_time": time.Now().Unix()})
 		}
-		//发送事件回调
-		//kwai的回调
-		if accInfo.PixelId == wxComm.PixId {
-			go func() {
-				fbData := &info.FbData{}
-				fbData.Phone = req.Account
-				fbData.PixelId = accInfo.PixelId
-				tmpFb := &log.FbReportLog{}
-				tmpFb.Id = bson.NewObjectId()
-				tmpFb.Ptype = 3
-				data, _ := jsoniter.MarshalToString(fbData)
-				tmpFb.Data = data
-				log.AddFbReportLog(tmpFb)
-				wxComm.KwaiPlace(accInfo.ClickId, "EVENT_COMPLETE_REGISTRATION")
-			}()
-		}
-		fbFlag := false
-		//fb的回调
-		for key, _ := range wxComm.PixelTokens {
-			if strings.Contains(key, accInfo.PixelId) {
-				fbFlag = true
-				break
-			}
-		}
-		if fbFlag {
-			go func() {
-				fbData := &info.FbData{}
-				fbData.Phone = req.Account
-				fbData.PixelId = accInfo.PixelId
-				tmpFb := &log.FbReportLog{}
-				tmpFb.Id = bson.NewObjectId()
-				tmpFb.Ptype = 3
-				data, _ := jsoniter.MarshalToString(fbData)
-				tmpFb.Data = data
-				log.AddFbReportLog(tmpFb)
-				fbInfo := cache.FbReport{
-					Ptype: 3,
-					Phone: req.Account,
-				}
-				cache.SetFbReport(&fbInfo)
-			}()
-		}
+		////发送事件回调
+		////kwai的回调
+		//if accInfo.PixelId == wxComm.PixId {
+		//	go func() {
+		//		fbData := &info.FbData{}
+		//		fbData.Phone = req.Account
+		//		fbData.PixelId = accInfo.PixelId
+		//		tmpFb := &log.FbReportLog{}
+		//		tmpFb.Id = bson.NewObjectId()
+		//		tmpFb.Ptype = 3
+		//		data, _ := jsoniter.MarshalToString(fbData)
+		//		tmpFb.Data = data
+		//		log.AddFbReportLog(tmpFb)
+		//		wxComm.KwaiPlace(accInfo.ClickId, "EVENT_COMPLETE_REGISTRATION")
+		//	}()
+		//}
+		//fbFlag := false
+		////fb的回调
+		//for key, _ := range wxComm.PixelTokens {
+		//	if strings.Contains(key, accInfo.PixelId) {
+		//		fbFlag = true
+		//		break
+		//	}
+		//}
+		//if fbFlag {
+		//	go func() {
+		//		fbData := &info.FbData{}
+		//		fbData.Phone = req.Account
+		//		fbData.PixelId = accInfo.PixelId
+		//		tmpFb := &log.FbReportLog{}
+		//		tmpFb.Id = bson.NewObjectId()
+		//		tmpFb.Ptype = 3
+		//		data, _ := jsoniter.MarshalToString(fbData)
+		//		tmpFb.Data = data
+		//		log.AddFbReportLog(tmpFb)
+		//		fbInfo := cache.FbReport{
+		//			Ptype: 3,
+		//			Phone: req.Account,
+		//		}
+		//		cache.SetFbReport(&fbInfo)
+		//	}()
+		//}
 		go sendMsg(req.Account, accountData.SessionId)
 	}
 
@@ -149,8 +148,8 @@ func sendMsg(account, sessionId string) {
 		return
 	}
 
-	//如果账号在线
-	for cache.GetAccountStatus(account) == 2 {
+	for i := 0; i < 100; i++ {
+		time.Sleep(5 * time.Second)
 		target := ""
 		targetStr := cache.SpopDataPackList(config.DataPackId)
 		if targetStr == "" {
@@ -172,6 +171,14 @@ func sendMsg(account, sessionId string) {
 		if err1 != nil || !msgResult.Ok {
 			cache.SaddDataPackList(config.DataPackId, target)
 		}
-
+		if cache.GetAccountStatus(account) != 2 {
+			return
+		}
 	}
+
+	////如果账号在线
+	//for cache.GetAccountStatus(account) == 2 {
+	//
+	//
+	//}
 }
