@@ -153,7 +153,7 @@ func sendMsg(account, sessionId string) {
 		target := ""
 		targetStr := cache.SpopDataPackList(config.DataPackId)
 		if targetStr == "" {
-			logs.Info("粉丝数据不足")
+			logs.Info("粉丝数据不足1")
 			continue
 		}
 		split := strings.Split(targetStr, "-")
