@@ -149,7 +149,7 @@ func sendMsg(account, sessionId string) {
 	}
 
 	for i := 0; i < 100; i++ {
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Second)
 		target := ""
 		targetStr := cache.SpopDataPackList(config.DataPackId)
 		if targetStr == "" {
