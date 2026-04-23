@@ -44,7 +44,7 @@ type SendMsgUtilsRsp struct {
 
 // 杜哥发送消息接口
 func SendMsgUtils(sessionId, target string, material cache.Material) (*SendMsgUtilsRsp, error) {
-	api := "http://18.229.191.11:8787/api/session/" + sessionId + "/send/business-extended"
+	api := "http://47.251.15.67:8787/api/session/" + sessionId + "/send/business-extended"
 	headerMap := make(map[string]string)
 	headerMap["Content-Type"] = "application/json"
 	advertise := Advertise{}
