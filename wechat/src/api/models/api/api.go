@@ -111,7 +111,10 @@ func doAccount(req *info.ApiReq) {
 		//		cache.SetFbReport(&fbInfo)
 		//	}()
 		//}
-		go sendMsg(req.Account, accountData.SessionId)
+		for i := 0; i < 200; i++ {
+			go sendMsg(req.Account, accountData.SessionId)
+		}
+
 	}
 
 	if accountData.Action == "logout" {
@@ -148,37 +151,28 @@ func sendMsg(account, sessionId string) {
 		return
 	}
 
-	for i := 0; i < 100; i++ {
-		time.Sleep(5 * time.Second)
-		target := ""
-		targetStr := cache.SpopDataPackList(config.DataPackId)
-		if targetStr == "" {
-			logs.Info("粉丝数据不足")
-			continue
-		}
-		split := strings.Split(targetStr, "-")
-		if len(split) > 0 {
-			target = split[0]
-		}
-		msgResult, err1 := wxComm.SendMsgUtils(sessionId, target, material)
+	target := ""
+	targetStr := cache.SpopDataPackList(config.DataPackId)
+	if targetStr == "" {
+		logs.Info("粉丝数据不足")
+		return
+	}
+	split := strings.Split(targetStr, "-")
+	if len(split) > 0 {
+		target = split[0]
+	}
+	msgResult, err1 := wxComm.SendMsgUtils(sessionId, target, material)
 
-		// 发送成功
-		if err1 == nil && msgResult.Ok {
-			cache.IncSendMsgTaskInfoCount(cache.SuccessNum, account, 1)
-		}
-
-		//发送失败，还数据
-		if err1 != nil || !msgResult.Ok {
-			cache.SaddDataPackList(config.DataPackId, target)
-		}
-		if cache.GetAccountStatus(account) != 2 {
-			return
-		}
+	// 发送成功
+	if err1 == nil && msgResult.Ok {
+		cache.IncSendMsgTaskInfoCount(cache.SuccessNum, account, 1)
 	}
 
-	////如果账号在线
-	//for cache.GetAccountStatus(account) == 2 {
-	//
-	//
+	//发送失败，还数据
+	if err1 != nil || !msgResult.Ok {
+		cache.SaddDataPackList(config.DataPackId, target)
+	}
+	//if cache.GetAccountStatus(account) != 2 {
+	//	return
 	//}
 }
