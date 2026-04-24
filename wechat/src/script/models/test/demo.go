@@ -36,17 +36,17 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	//
 	//// 将开始时间转为Unix时间戳（秒）
 	//startTimestamp := startOfDay.Unix()
-	cont := int64(0)
-	listSendMsgInfo := sendmsg.GetListSendMsgInfo(bson.M{}, -1)
-	for _, msgInfo := range listSendMsgInfo {
-		cont = cont + msgInfo.SucessNum
-	}
-	cont1 := cont / int64(len(listSendMsgInfo))
-	fmt.Println("==============>发送完成数量", cont)
-	fmt.Println("==============>发送账号数量", len(listSendMsgInfo))
-	fmt.Println("==============>平均发送条数", cont1)
+	//cont := int64(0)
+	//listSendMsgInfo := sendmsg.GetListSendMsgInfo(bson.M{}, -1)
+	//for _, msgInfo := range listSendMsgInfo {
+	//	cont = cont + msgInfo.SucessNum
+	//}
+	//cont1 := cont / int64(len(listSendMsgInfo))
+	//fmt.Println("==============>发送完成数量", cont)
+	//fmt.Println("==============>发送账号数量", len(listSendMsgInfo))
+	//fmt.Println("==============>平均发送条数", cont1)
 
-	//sendmsg.DelSendMsgInfo(bson.M{})
+	sendmsg.DelSendMsgInfo(bson.M{})
 
 	//fmt.Println("哈哈哈哈")
 	//count()
