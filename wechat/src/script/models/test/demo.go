@@ -38,6 +38,9 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	//startTimestamp := startOfDay.Unix()
 	cont := int64(0)
 	listSendMsgInfo := sendmsg.GetListSendMsgInfo(bson.M{}, -1)
+	if len(listSendMsgInfo) == 0 {
+		fmt.Println("==============>")
+	}
 	for _, msgInfo := range listSendMsgInfo {
 		cont = cont + msgInfo.SucessNum
 	}
