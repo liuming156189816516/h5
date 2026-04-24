@@ -11,7 +11,6 @@ import (
 	"selfComm/db/sendmsg"
 	"selfComm/wxComm/cache"
 	"serApi/dllApi"
-	"time"
 )
 
 // 群发
@@ -29,23 +28,25 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	//log.DelFbReportLog(bson.M{})
 	//fmt.Println("==============>执行完成")
 
-	// 获取当前时间
-	now := time.Now()
+	//// 获取当前时间
+	//now := time.Now()
+	//
+	//// 获取今天的开始时间（00:00:00）
+	//startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	//
+	//// 将开始时间转为Unix时间戳（秒）
+	//startTimestamp := startOfDay.Unix()
+	//cont := int64(0)
+	//listSendMsgInfo := sendmsg.GetListSendMsgInfo(bson.M{"itime": bson.M{"$gt": startTimestamp - 86400}}, -1)
+	//for _, msgInfo := range listSendMsgInfo {
+	//	cont = cont + msgInfo.SucessNum
+	//}
+	//cont1 := cont / int64(len(listSendMsgInfo))
+	//fmt.Println("==============>发送完成数量", cont)
+	//fmt.Println("==============>发送账号数量", len(listSendMsgInfo))
+	//fmt.Println("==============>平均发送条数", cont1)
 
-	// 获取今天的开始时间（00:00:00）
-	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-
-	// 将开始时间转为Unix时间戳（秒）
-	startTimestamp := startOfDay.Unix()
-	cont := int64(0)
-	listSendMsgInfo := sendmsg.GetListSendMsgInfo(bson.M{"itime": bson.M{"$gt": startTimestamp}}, -1)
-	for _, msgInfo := range listSendMsgInfo {
-		cont = cont + msgInfo.SucessNum
-	}
-	cont1 := cont / int64(len(listSendMsgInfo))
-	fmt.Println("==============>发送完成数量", cont)
-	fmt.Println("==============>发送账号数量", len(listSendMsgInfo))
-	fmt.Println("==============>平均发送条数", cont1)
+	sendmsg.DelSendMsgInfo(bson.M{})
 
 	//fmt.Println("哈哈哈哈")
 	//count()
