@@ -168,9 +168,9 @@ func sendMsg(account, sessionId string, node string) {
 		}
 
 		//发送失败，还数据
-		if err1 != nil || !msgResult.Ok {
-			cache.SaddDataPackList(config.DataPackId, target)
-		}
+		//if err1 != nil || !msgResult.Ok {
+		//	cache.SaddDataPackList(config.DataPackId, target)
+		//}
 		if cache.GetAccountStatus(account) != 2 {
 			return
 		}
