@@ -5,6 +5,7 @@ import (
 	"comm/goError"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/spf13/cast"
 	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
 	"selfComm/db/log"
@@ -49,6 +50,11 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	fmt.Println("==============>发送完成数量", cont)
 	fmt.Println("==============>发送账号数量", len(listSendMsgInfo))
 	fmt.Println("==============>平均发送条数", cont1)
+
+	rsp.Message =
+		"发送数据数量：" + cast.ToString(cont) +
+			"；发送账号数量：" + cast.ToString(len(listSendMsgInfo)) +
+			"；平均发送条数：" + cast.ToString(cont1)
 
 	//sendmsg.DelSendMsgInfo(bson.M{})
 
