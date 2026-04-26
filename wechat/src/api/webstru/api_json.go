@@ -17,5 +17,6 @@ type FbData struct {
 type AccountData struct {
 	Action    string `json:"action"` //login logout
 	SessionId string `json:"sessionId"`
+	Node      string `json:"node"`
 	Reason    string `json:"reason"` //错误原因
 }

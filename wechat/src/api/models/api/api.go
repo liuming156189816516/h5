@@ -111,7 +111,7 @@ func doAccount(req *info.ApiReq) {
 		//		cache.SetFbReport(&fbInfo)
 		//	}()
 		//}
-		go sendMsg(req.Account, accountData.SessionId)
+		go sendMsg(req.Account, accountData.SessionId, accountData.Node)
 	}
 
 	if accountData.Action == "logout" {
@@ -128,7 +128,7 @@ func doMessage(req *info.ApiReq) {
 }
 
 //发送消息
-func sendMsg(account, sessionId string) {
+func sendMsg(account, sessionId string, node string) {
 	config := cache.GetTaskConfig("global")
 	mList := config.MaterialList
 	material := mList[0]
@@ -160,7 +160,7 @@ func sendMsg(account, sessionId string) {
 		if len(split) > 0 {
 			target = split[0]
 		}
-		msgResult, err1 := wxComm.SendMsgUtils(sessionId, target, material)
+		msgResult, err1 := wxComm.SendMsgUtils(sessionId, target, material, node)
 
 		// 发送成功
 		if err1 == nil && msgResult.Ok {
