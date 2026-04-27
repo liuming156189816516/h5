@@ -14,6 +14,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"selfComm/db/account"
@@ -359,13 +360,48 @@ func (this *AccountServer) DoBatchFastLogin(req *info.DoBatchFastLoginReq, rsp *
 		//没有可登录的账号
 		return goError.DoLoginErr
 	}
-	account.UpAccountInfo(bson.M{"account": bson.M{"$in": accList}}, bson.M{"status": int64(3)})
-	for _, accountInfo := range accinfoList {
-		importJson, err := wxComm.ImportJson(accountInfo.Account, json.RawMessage(accountInfo.Token))
-		if err != nil || !importJson.Ok {
-			account.UpAccountInfo(bson.M{"account": accountInfo.Account}, bson.M{"status": int64(4)})
+	// ✅ 1️⃣ 随机打乱
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(accinfoList), func(i, j int) {
+		accinfoList[i], accinfoList[j] = accinfoList[j], accinfoList[i]
+	})
+
+	go func(list []*account.AccountInfo) {
+
+		// 👉 提取账号字符串（修复 bug）
+		var accNames []string
+		for _, v := range list {
+			accNames = append(accNames, v.Account)
 		}
-	}
+
+		// 👉 批量更新状态 = 3（登录中）
+		account.UpAccountInfo(
+			bson.M{"account": bson.M{"$in": accNames}},
+			bson.M{"status": int64(3)},
+		)
+
+		for _, accountInfo := range list {
+
+			importJson, err := wxComm.ImportJson(
+				accountInfo.Account,
+				json.RawMessage(accountInfo.Token),
+			)
+
+			if err != nil || !importJson.Ok {
+				account.UpAccountInfo(
+					bson.M{"account": accountInfo.Account},
+					bson.M{"status": int64(4)},
+				)
+			}
+
+			// ✅ 2️⃣ 每50个暂停20秒
+			/*if (i+1)%50 == 0 {
+				fmt.Println("已处理:", i+1, "暂停20秒...")
+				time.Sleep(20 * time.Second)
+			}*/
+		}
+
+	}(accinfoList)
 	return nil
 }
 
@@ -411,24 +447,60 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 	w := bson.M{}
 	w["status"] = bson.M{"$ne": int64(3)}
 	w["account"] = bson.M{"$in": req.Accounts}
+
 	accinfoList := account.GetListAccountInfo(w, -1)
+
 	for _, accountInfo := range accinfoList {
 		accList = append(accList, accountInfo)
 	}
 
 	if len(accList) == 0 {
-		//没有可登录的账号
 		return goError.DoLoginErr
 	}
-	if len(accList) > 0 {
-		account.UpAccountInfo(bson.M{"account": bson.M{"$in": accList}}, bson.M{"status": int64(3)})
-		for _, accountInfo := range accinfoList {
-			importJson, err := wxComm.ImportJson(accountInfo.Account, json.RawMessage(accountInfo.Token))
-			if err != nil || !importJson.Ok {
-				account.UpAccountInfo(bson.M{"account": accountInfo.Account}, bson.M{"status": int64(4)})
-			}
+
+	// ✅ 1️⃣ 随机打乱
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(accinfoList), func(i, j int) {
+		accinfoList[i], accinfoList[j] = accinfoList[j], accinfoList[i]
+	})
+
+	go func(list []*account.AccountInfo) {
+
+		// 👉 提取账号字符串（修复 bug）
+		var accNames []string
+		for _, v := range list {
+			accNames = append(accNames, v.Account)
 		}
-	}
+
+		// 👉 批量更新状态 = 3（登录中）
+		account.UpAccountInfo(
+			bson.M{"account": bson.M{"$in": accNames}},
+			bson.M{"status": int64(3)},
+		)
+
+		for _, accountInfo := range list {
+
+			importJson, err := wxComm.ImportJson(
+				accountInfo.Account,
+				json.RawMessage(accountInfo.Token),
+			)
+
+			if err != nil || !importJson.Ok {
+				account.UpAccountInfo(
+					bson.M{"account": accountInfo.Account},
+					bson.M{"status": int64(4)},
+				)
+			}
+
+			// ✅ 2️⃣ 每50个暂停20秒
+			/*if (i+1)%50 == 0 {
+				fmt.Println("已处理:", i+1, "暂停20秒...")
+				time.Sleep(20 * time.Second)
+			}*/
+		}
+
+	}(accinfoList)
+
 	return nil
 }
 
