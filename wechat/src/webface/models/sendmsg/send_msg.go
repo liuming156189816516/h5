@@ -115,8 +115,10 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 		}
 	}
 
-	rsp.SuccessCount = totalSucess
-	rsp.Average = totalSucess / accountCount
+	if totalSucess > 0 && accountCount > 0 {
+		rsp.SuccessCount = totalSucess
+		rsp.Average = totalSucess / accountCount
+	}
 
 	go func() {
 		msgInfoList := sendmsg.GetListSendMsgInfo(bson.M{}, -1)
