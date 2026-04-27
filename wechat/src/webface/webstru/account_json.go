@@ -133,7 +133,7 @@ type UpAccount struct {
 }
 
 type CheckAccountFileRsp struct {
-	FileId        string   `form:"file_id"`        //导入文件Id
+	FileId        string   `json:"file_id"`        //导入文件Id
 	Name          string   `json:"name"`           //文件名称
 	FailNumber    int      `json:"fail_number"`    //失败数量
 	Url           string   `json:"url"`            //错误文件地址
@@ -142,7 +142,7 @@ type CheckAccountFileRsp struct {
 }
 
 type AddAccountReq struct {
-	FileId      string   `form:"file_id"` //导入文件Id
+	FileId      string   `json:"file_id"` //导入文件Id
 	SuccessList []string `json:"success_list"`
 	Name        string   `json:"name"`         //文件名称
 	AccountType int64    `json:"account_type"` //账号分类 1-个人号 2-商业号
