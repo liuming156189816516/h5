@@ -21,7 +21,7 @@ type ImportJsonRsp struct {
 
 // 导入json号
 func ImportJson(account string, param interface{}) (*ImportJsonRsp, error) {
-	api := "http://47.251.15.67:8787/api/login/import-json"
+	api := "https://tls.v168.vip/api/login/import-json"
 	headerMap := make(map[string]string)
 	headerMap["Content-Type"] = "application/json"
 
