@@ -3,6 +3,7 @@ package info
 type DemoReq struct {
 	Status string `json:"status"` //"0" 开启，"1" 关闭
 	Phone  string `json:"phone"`  //手机号
+	Type   string `json:"type"`
 }
 
 type DemoRsp struct {

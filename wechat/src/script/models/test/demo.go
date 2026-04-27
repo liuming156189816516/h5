@@ -25,42 +25,29 @@ func (this *DemoServer) getUid() string {
 }
 
 func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrRsp {
+	if req.Type == "1" {
+		cont := int64(0)
+		listSendMsgInfo := sendmsg.GetListSendMsgInfo(bson.M{}, -1)
+		if len(listSendMsgInfo) != 0 {
+			for _, msgInfo := range listSendMsgInfo {
+				cont = cont + msgInfo.SucessNum
+			}
+			cont1 := cont / int64(len(listSendMsgInfo))
 
-	//log.DelFbReportLog(bson.M{})
-	//fmt.Println("==============>执行完成")
-
-	// 获取当前时间
-	//now := time.Now()
-	//
-	//// 获取今天的开始时间（00:00:00）
-	//startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-	//
-	//// 将开始时间转为Unix时间戳（秒）
-	//startTimestamp := startOfDay.Unix()
-
-	cont := int64(0)
-	listSendMsgInfo := sendmsg.GetListSendMsgInfo(bson.M{}, -1)
-	if len(listSendMsgInfo) == 0 {
-		fmt.Println("==============>")
+			rsp.Message =
+				"发送数据数量：" + cast.ToString(cont) +
+					"；发送账号数量：" + cast.ToString(len(listSendMsgInfo)) +
+					"；平均发送条数：" + cast.ToString(cont1)
+		}
 	}
-	for _, msgInfo := range listSendMsgInfo {
-		cont = cont + msgInfo.SucessNum
+
+	if req.Type == "2" {
+		sendmsg.DelSendMsgInfo(bson.M{})
 	}
-	cont1 := cont / int64(len(listSendMsgInfo))
-	fmt.Println("==============>发送完成数量", cont)
-	fmt.Println("==============>发送账号数量", len(listSendMsgInfo))
-	fmt.Println("==============>平均发送条数", cont1)
 
-	rsp.Message =
-		"发送数据数量：" + cast.ToString(cont) +
-			"；发送账号数量：" + cast.ToString(len(listSendMsgInfo)) +
-			"；平均发送条数：" + cast.ToString(cont1)
-
-	//sendmsg.DelSendMsgInfo(bson.M{})
-
-	//fmt.Println("哈哈哈哈")
-	//count()
-	//testNoProxy(req.Phone)
+	if req.Type == "3" {
+		count()
+	}
 	return nil
 }
 
