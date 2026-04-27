@@ -116,8 +116,14 @@ func doAccount(req *info.ApiReq) {
 
 	if accountData.Action == "logout" {
 		cache.SetAccountStatus(req.Account, 1)
-		accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"reason": accountData.Reason, "status": int64(1), "offline_time": time.Now().Unix()})
-		sendmsg.UpSendMsgInfo(bson.M{"account": req.Account}, bson.M{"account_status": 1})
+		accountInfo := accountDB.GetOneAccountInfo(bson.M{"account": req.Account})
+		if accountInfo.Status == 2 {
+			sendmsg.UpSendMsgInfo(bson.M{"account": req.Account}, bson.M{"account_status": 1})
+		} else {
+			sendmsg.UpSendMsgInfo(bson.M{"account": req.Account}, bson.M{"account_status": 1})
+			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"reason": accountData.Reason, "status": int64(1), "offline_time": time.Now().Unix()})
+		}
+
 	}
 
 }
