@@ -128,15 +128,12 @@ type DoBathDelAccountFileReq struct {
 	Ids []string `json:"ids"`
 }
 
-type CheckAccountFileReq struct {
-	ImportType int64 `form:"import_type"` //导入类型 1-channel格式 2-全参格式
-}
-
 type UpAccount struct {
 	Phone string `json:"phone"`
 }
 
 type CheckAccountFileRsp struct {
+	FileId        string   `form:"file_id"`        //导入文件Id
 	Name          string   `json:"name"`           //文件名称
 	FailNumber    int      `json:"fail_number"`    //失败数量
 	Url           string   `json:"url"`            //错误文件地址
@@ -145,10 +142,10 @@ type CheckAccountFileRsp struct {
 }
 
 type AddAccountReq struct {
+	FileId      string   `form:"file_id"` //导入文件Id
 	SuccessList []string `json:"success_list"`
 	Name        string   `json:"name"`         //文件名称
 	AccountType int64    `json:"account_type"` //账号分类 1-个人号 2-商业号
-	ImportType  int64    `json:"import_type"`  //导入类型 1-channel格式
 	GroupId     string   `json:"group_id"`     //分组id
 	Remark      string   `json:"remark"`       //备注
 }
@@ -198,9 +195,9 @@ type DoFreedIpReq struct {
 }
 
 type DoBatchLoginReq struct {
-	Accounts   []string `json:"accounts"`    //账号列表
-	IpCategory int64    `json:"ip_category"` //ip类别 1-静态ip 2-动态ip
-	IpType     int64    `json:"ip_type"`     //ip类型 1-ipV4 2-ipv6 3-动态住宅
-	IpId       string   `json:"ip_id"`       //ipId
-	Country    string   `json:"country"`     //国家
+	Accounts []string `json:"accounts"` //账号列表
+}
+
+type UpJsonAccount struct {
+	Phone string `json:"Phone"`
 }

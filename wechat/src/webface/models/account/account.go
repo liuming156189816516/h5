@@ -3,17 +3,17 @@ package account
 import (
 	"comm/comm"
 	"comm/cos"
-	"comm/event"
 	"comm/goError"
 	"comm/mgoDeal"
 	"comm/tableName"
+	"encoding/json"
 	"github.com/astaxie/beego"
+	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
-	"math/rand"
 	"os"
 	"selfComm/db/account"
-	"selfComm/db/ip"
+	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
 	"strings"
 	"time"
@@ -257,11 +257,6 @@ func (this *AccountServer) DoBatchDelAccount(req *info.DoBatchDelAccountReq, rsp
 				go cache.DelProxyIp(accInfo.Account)
 				go cache.DelAllAccountList(accInfo.Account)
 				go cache.DelAccountInfo(accInfo.Account)
-				//批量移除
-				e := &event.TaskUserRemoveEventReq{
-					Account: []string{accInfo.Account},
-				}
-				event.AddTask(event.TaskTypeUserRemove, "", e)
 			}
 		}(accInfoList)
 	}
@@ -284,24 +279,10 @@ func (this *AccountServer) DoBatchFastLogin(req *info.DoBatchFastLoginReq, rsp *
 		return goError.DoLoginErr
 	}
 	account.UpAccountInfo(bson.M{"account": bson.M{"$in": accList}}, bson.M{"status": int64(3)})
-	groupAccList := [][]string{}
-	aList := []string{}
-	for i, acc := range accList {
-		aList = append(aList, acc)
-		if len(aList) >= 50 {
-			groupAccList = append(groupAccList, aList)
-			aList = []string{}
-		}
-		if i == len(accList)-1 {
-			groupAccList = append(groupAccList, aList)
-		}
-	}
-	for _, accList2 := range groupAccList {
-		if len(accList2) > 0 {
-			e := &event.TaskUserLoginEventReq{
-				Account: accList2,
-			}
-			event.AddLoginTask(event.TaskTypeUserLogin, "", e)
+	for _, accountInfo := range accinfoList {
+		importJson, err := wxComm.ImportJson(accountInfo.Account, json.RawMessage(accountInfo.Token))
+		if err != nil || !importJson.Ok {
+			account.UpAccountInfo(bson.M{"account": accountInfo.Account}, bson.M{"status": int64(4)})
 		}
 	}
 	return nil
@@ -309,29 +290,8 @@ func (this *AccountServer) DoBatchFastLogin(req *info.DoBatchFastLoginReq, rsp *
 
 // 批量下线
 func (this *AccountServer) DoBatchLogout(req *info.DoBatchLogoutReq, rsp *info.NullRsp) *goError.ErrRsp {
-
 	accList := req.Accounts
-	account.UpAccountInfo(bson.M{"account": bson.M{"$in": accList}}, bson.M{"status": int64(5)})
-	groupAccList := [][]string{}
-	aList := []string{}
-	for i, acc := range accList {
-		aList = append(aList, acc)
-		if len(aList) >= 50 {
-			groupAccList = append(groupAccList, aList)
-			aList = []string{}
-		}
-		if i == len(accList)-1 {
-			groupAccList = append(groupAccList, aList)
-		}
-	}
-	for _, accList2 := range groupAccList {
-		if len(accList2) > 0 {
-			e := &event.TaskUserLogoutEventReq{
-				Account: accList2,
-			}
-			event.AddTask(event.TaskTypeUserLogout, "", e)
-		}
-	}
+	account.UpAccountInfo(bson.M{"account": bson.M{"$in": accList}}, bson.M{"status": int64(1)})
 	return nil
 }
 
@@ -366,13 +326,13 @@ func (this *AccountServer) DoFreedIp(req *info.DoFreedIpReq, rsp *info.NullRsp) 
 // 批量上线
 func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.NullRsp) *goError.ErrRsp {
 
-	accList := []string{}
+	accList := []*account.AccountInfo{}
 	w := bson.M{}
 	w["status"] = bson.M{"$ne": int64(3)}
 	w["account"] = bson.M{"$in": req.Accounts}
 	accinfoList := account.GetListAccountInfo(w, -1)
 	for _, accountInfo := range accinfoList {
-		accList = append(accList, accountInfo.Account)
+		accList = append(accList, accountInfo)
 	}
 
 	if len(accList) == 0 {
@@ -380,122 +340,189 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 		return goError.DoLoginErr
 	}
 	if len(accList) > 0 {
-		account.UpAccountInfo(bson.M{"account": bson.M{"$in": accList}}, bson.M{"status": int64(3), "is_proxy_user": int64(0)})
-		if req.IpCategory == 1 {
-			for _, acc := range accList {
-				proxyIp := cache.GetProxyIp(acc)
-				cache.IncIpUserNum(proxyIp.IpId, -1)
-				cache.DelProxyIp(acc)
-			}
-			//静态ip登录
-			where := bson.M{}
-			where["ip_category"] = int64(1)
-			where["ip_type"] = req.IpType
-			where["status"] = int64(1)
-			where["disable_status"] = int64(1)
-			where["country"] = req.Country
-			listIp := ip.GetListIp(where, -1)
-			ShuffleSlice(listIp)
-			j := 0
-			for _, ipInfo := range listIp {
-				userNum := cache.GetIpUserNum(ipInfo.Id.Hex())
-				if userNum >= ipInfo.AllotNum {
-					continue
-				}
-				lnum := ipInfo.AllotNum - userNum
-				for i := 0; i < int(lnum); i++ {
-					ipTmp := cache.ProxyIpInfo{}
-					ipTmp.IpId = ipInfo.Id.Hex()
-					ipTmp.User = ipInfo.ProxyUser
-					ipTmp.Pwd = ipInfo.ProxyPwd
-					split := strings.Split(ipInfo.ProxyIp, ":")
-					if len(split) > 0 {
-						ipTmp.Port = split[len(split)-1]
-						ipTmp.Host = strings.ReplaceAll(ipInfo.ProxyIp, ":"+ipTmp.Port, "")
-					}
-					ipTmp.Type = ipInfo.ProxyType
-					ipTmp.Country = ipInfo.Country
-					ipTmp.IpCategory = ipInfo.IpCategory
-					ipTmp.IpType = ipInfo.IpType
-					ipTmp.IpId = ipInfo.Id.Hex()
-					cache.SetProxyIp(accList[j], &ipTmp)
-					cache.IncIpUserNum(ipInfo.Id.Hex(), 1)
-					j++
-					if len(accList) <= j {
-						break
-					}
-				}
-				if len(accList) <= j {
-					break
-				}
-			}
-		}
-
-		if req.IpCategory == 2 && req.IpType == 3 {
-			//动态ip登录
-			for _, acc := range accList {
-				ipInfo := ip.GetByIdIp(req.IpId)
-				ipTmp := cache.ProxyIpInfo{}
-				ipTmp.IpId = ipInfo.Id.Hex()
-				ipTmp.User = ipInfo.ProxyUser
-				ipTmp.Pwd = ipInfo.ProxyPwd
-				split := strings.Split(ipInfo.ProxyIp, ":")
-				if len(split) > 0 {
-					ipTmp.Port = split[len(split)-1]
-					ipTmp.Host = strings.ReplaceAll(ipInfo.ProxyIp, ":"+ipTmp.Port, "")
-				}
-				ipTmp.Type = ipInfo.ProxyType
-				ipTmp.Country = ipInfo.Country
-				ipTmp.IpCategory = ipInfo.IpCategory
-				ipTmp.IpType = ipInfo.IpType
-				ipTmp.IpId = ipInfo.Id.Hex()
-				cache.SetProxyIp(acc, &ipTmp)
-				cache.IncIpUserNum(ipInfo.Id.Hex(), 1)
+		account.UpAccountInfo(bson.M{"account": bson.M{"$in": accList}}, bson.M{"status": int64(3)})
+		for _, accountInfo := range accinfoList {
+			importJson, err := wxComm.ImportJson(accountInfo.Account, json.RawMessage(accountInfo.Token))
+			if err != nil || !importJson.Ok {
+				account.UpAccountInfo(bson.M{"account": accountInfo.Account}, bson.M{"status": int64(4)})
 			}
 		}
 	}
-
-	go func(accList []string) {
-		bList := []string{}
-		for _, acc := range accList {
-			proxyIp := cache.GetProxyIp(acc)
-			if proxyIp.Host == "" {
-				cache.SetAccountStatus(acc, 1)
-				account.UpAccountInfo(bson.M{"account": acc}, bson.M{"status": int64(1), "reason": "当前用户ip资源不足，请自行补充入库"})
-				continue
-			} else {
-				go account.UpAccountInfo(bson.M{"account": acc}, bson.M{"proxy_ip": proxyIp.IpId, "ip_time": time.Now().Unix()})
-			}
-			bList = append(bList, acc)
-		}
-		groupAccList := [][]string{}
-		aList := []string{}
-		for i, acc := range bList {
-			aList = append(aList, acc)
-			if len(aList) >= 50 {
-				groupAccList = append(groupAccList, aList)
-				aList = []string{}
-			}
-			if i == len(bList)-1 {
-				groupAccList = append(groupAccList, aList)
-			}
-		}
-		for _, accList2 := range groupAccList {
-			if len(accList2) > 0 {
-				e := &event.TaskUserLoginEventReq{
-					Account: accList2,
-				}
-				event.AddLoginTask(event.TaskTypeUserLogin, "", e)
-			}
-		}
-	}(accList)
 	return nil
 }
 
-func ShuffleSlice(s []*ip.Ip) {
-	rand.Seed(time.Now().UnixNano())
-	for i := len(s) - 1; i > 0; i-- {
-		j := rand.Intn(i + 1)
-		s[i], s[j] = s[j], s[i]
+// 入库文件-列表
+func (this *AccountServer) GetAccountFileList(req *info.GetAccountFileListReq, rsp *info.GetAccountFileListRsp) *goError.ErrRsp {
+	db := comm.GetMgoDBName()
+	tb := tableName.GetTableAccountFileListInfo()
+	where := bson.M{}
+	if req.Name != "" {
+		where["name"] = req.Name
 	}
+	if req.StartTime > 0 && req.EndTime > 0 {
+		where["itime"] = bson.M{"$gte": req.StartTime, "$lte": req.EndTime}
+	}
+	rsp.List = []*info.GetAccountFileListInfo{}
+	rsp.Total, _ = mgoDeal.QueryMongoCount(db, tb, where)
+	if rsp.Total == 0 {
+		return nil
+	}
+	start := (req.Page - 1) * req.Limit
+	all, err := mgoDeal.RealQueryMongoAll(db, tb, where, "-itime", start, req.Limit)
+	if err != nil {
+		return goError.GLOBAL_SYSTEMERROR
+	}
+	for _, data := range all {
+		tmp := &info.GetAccountFileListInfo{}
+		if p, ok := data["_id"]; ok {
+			tmp.Id = utils.GetString(p)
+		}
+		if p, ok := data["name"]; ok {
+			tmp.Name = utils.GetString(p)
+		}
+		if p, ok := data["account_type"]; ok {
+			tmp.AccountType = utils.GetInt64(p)
+		}
+		if p, ok := data["status"]; ok {
+			tmp.Status = utils.GetInt64(p)
+		}
+		if p, ok := data["success_num"]; ok {
+			tmp.SuccessNum = utils.GetInt64(p)
+		}
+		if p, ok := data["fail_num"]; ok {
+			tmp.FailNum = utils.GetInt64(p)
+		}
+		if p, ok := data["remark"]; ok {
+			tmp.Remark = utils.GetString(p)
+		}
+		if p, ok := data["itime"]; ok {
+			tmp.Itime = utils.GetInt64(p)
+		}
+		tmp.AccType = "WS"
+		rsp.List = append(rsp.List, tmp)
+	}
+	return nil
+}
+
+// 入库文件-批量删除
+func (this *AccountServer) DoBathDelAccountFile(req *info.DoBathDelAccountFileReq, rsp *info.NullRsp) *goError.ErrRsp {
+	for _, id := range req.Ids {
+		account.DelAccountFile(bson.M{"_id": bson.ObjectIdHex(id)})
+		account.DelAccountLog(bson.M{"file_id": id})
+	}
+	return nil
+}
+
+// 检查文件
+func (this *AccountServer) CheckAccountFile(fileContent string, req *info.NullReq, rsp *info.CheckAccountFileRsp) *goError.ErrRsp {
+	fileContent = strings.ReplaceAll(fileContent, "\r\n", "\n")
+	fileContent = strings.ReplaceAll(fileContent, "\n\n", "\n")
+	fileContent = strings.ReplaceAll(fileContent, "\r", "\n")
+	ipStrArr := strings.Split(fileContent, "\n")
+	failNumber := 0
+	successList := []string{}
+	successNumber := 0
+	exportStr := ""
+	for _, ipStr := range ipStrArr {
+		upAccount := info.UpJsonAccount{}
+		jsoniter.UnmarshalFromString(ipStr, &upAccount)
+		if upAccount.Phone == "" {
+			failNumber++
+			exportStr = exportStr + ipStr + "\n"
+			continue
+		}
+		successNumber++
+		successList = append(successList, ipStr)
+	}
+
+	fileName := comm.Md5(exportStr) + ".txt"
+	tmpPath := beego.AppConfig.String("tmpPath")
+	filePath := tmpPath + fileName
+	err := ioutil.WriteFile(filePath, []byte(exportStr), 0777)
+	if err != nil {
+		return goError.GLOBAL_SYSTEMERROR
+	}
+	defer os.Remove(filePath)
+	fileUrl := cos.UploadAwsFile(filePath, fileName)
+	rsp.Url = fileUrl
+	rsp.FailNumber = failNumber
+	rsp.SuccessNumber = successNumber
+	rsp.SuccessList = successList
+	return nil
+}
+
+// 添加账号
+func (this *AccountServer) AddAccount(req *info.AddAccountReq, rsp *info.AddAccountRsp) *goError.ErrRsp {
+	uid := this.Sess.Uid
+	tmp1 := &account.AccountFile{}
+	tmp1.Id = bson.ObjectIdHex(req.FileId)
+	tmp1.Name = req.Name
+	tmp1.AccountType = req.AccountType
+	tmp1.Remark = req.Remark
+	tmp1.Status = 1
+	account.AddAccountFile(tmp1)
+	rsp.Id = tmp1.Id.Hex()
+
+	go func(uid, fileId string, accountType int64) {
+		successNumber := 0
+		failNumber := 0
+		logList := make([]interface{}, 0)
+		accList := make([]interface{}, 0)
+		for _, accountStr := range req.SuccessList {
+			acc := ""
+			token := accountStr
+			upAccount := info.UpJsonAccount{}
+			jsoniter.UnmarshalFromString(accountStr, &upAccount)
+			acc = upAccount.Phone
+
+			tmp2 := &account.AccountLog{}
+			tmp2.Id = bson.NewObjectId()
+			tmp2.FileId = fileId
+			tmp2.Account = acc
+			tmp2.Status = 2
+			tmp2.Token = token
+			tmp := &account.AccountInfo{}
+			upTime := cache.GetAllAccountList(tmp2.Account)
+			if upTime != "" {
+				failNumber++
+				tmp2.Status = 1
+				tmp2.Reason = "账号重复: " + utils.TimeIntToString(utils.StrToInt64(upTime))
+			} else {
+				tmp.Id = bson.NewObjectId()
+				tmp.Account = acc
+				tmp.GroupId = req.GroupId
+				tmp.Status = 1
+				tmp.AccountType = accountType
+				tmp.Token = token
+				tmp.Itime = time.Now().Unix()
+				tmp.Ptime = time.Now().Unix()
+				tmp.Creator = uid
+				successNumber++
+				accList = append(accList, tmp)
+				cache.SetAllAccountList(tmp.Account)
+				cache.SetAccountStatus(tmp.Account, tmp.Status)
+				accInfo := &cache.AccountInfo{
+					Account:     tmp.Account,
+					AccountType: tmp.AccountType,
+					Token:       tmp.Token,
+				}
+				cache.SetAccountInfo(tmp.Account, accInfo)
+			}
+			logList = append(logList, tmp2)
+			time.Sleep(4 * time.Millisecond)
+		}
+		account.AddBatchAccountInfo(accList)
+		go account.AddBatchAccountLog(logList)
+		account.UpAccountFile(bson.M{"_id": bson.ObjectIdHex(fileId)}, bson.M{"status": int64(2), "success_num": successNumber, "fail_num": failNumber})
+	}(uid, tmp1.Id.Hex(), req.AccountType)
+	return nil
+}
+
+// 获取上传结果
+func (this *AccountServer) GetAccountSchedule(req *info.GetAccountScheduleReq, rsp *info.GetAccountScheduleRsp) *goError.ErrRsp {
+	fileInfo := account.GetByIdAccountFile(req.Id)
+	rsp.UpStatus = fileInfo.Status
+	rsp.Success = fileInfo.SuccessNum
+	rsp.Fail = fileInfo.FailNum
+	return nil
 }

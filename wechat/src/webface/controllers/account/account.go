@@ -2,7 +2,15 @@ package account
 
 import (
 	"comm/goError"
+	"github.com/astaxie/beego"
 	jsoniter "github.com/json-iterator/go"
+	"gopkg.in/mgo.v2/bson"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"selfComm/wxComm"
+	"strings"
 	"webface/controllers"
 	"webface/models/account"
 	info "webface/webstru"
@@ -247,6 +255,178 @@ func (this *AccountController) DoFreedIp() {
 	}
 	rsp := &info.NullRsp{}
 	erro := member.DoFreedIp(req, rsp)
+	if erro != nil {
+		this.JsonResult(erro, nil)
+		return
+	}
+	this.JsonResult(goError.SuccRsp, rsp)
+}
+
+//入库文件-列表
+func (this *AccountController) GetAccountFileList() {
+	req := &info.GetAccountFileListReq{}
+	if len(this.Ctx.Input.RequestBody) != 0 {
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		if err != nil {
+			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+			return
+		}
+	}
+	member := &account.AccountServer{
+		Sess: this.Sess,
+	}
+	rsp := &info.GetAccountFileListRsp{}
+	erro := member.GetAccountFileList(req, rsp)
+	if erro != nil {
+		this.JsonResult(erro, nil)
+		return
+	}
+	this.JsonResult(goError.SuccRsp, rsp)
+}
+
+//入库文件-批量删除
+func (this *AccountController) DoBathDelAccountFile() {
+	req := &info.DoBathDelAccountFileReq{}
+	if len(this.Ctx.Input.RequestBody) != 0 {
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		if err != nil {
+			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+			return
+		}
+	}
+	member := &account.AccountServer{
+		Sess: this.Sess,
+	}
+	rsp := &info.NullRsp{}
+	erro := member.DoBathDelAccountFile(req, rsp)
+	if erro != nil {
+		this.JsonResult(erro, nil)
+		return
+	}
+	this.JsonResult(goError.SuccRsp, rsp)
+}
+
+func (this *AccountController) CheckAccountFile() {
+	f, h, err := this.GetFile("file")
+	req := &info.NullReq{}
+
+	if err != nil {
+		this.JsonResult(goError.NewGoError(400, "未提交文件"), nil)
+		return
+	}
+	defer f.Close()
+
+	if err := this.ParseForm(req); err != nil {
+		this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+		return
+	}
+
+	// 👉 校验后缀
+	ext := strings.ToLower(filepath.Ext(h.Filename))
+	if ext != ".zip" {
+		this.JsonResult(goError.NewGoError(400, "只允许上传zip文件"), nil)
+		return
+	}
+
+	// 👉 防止路径攻击
+	filename := filepath.Base(h.Filename)
+	fileId := bson.NewObjectId().Hex()
+	tmpPath := beego.AppConfig.String("tmpPath") + fileId + "/"
+	// 👉 保存目录（建议独立目录，避免冲突）
+	saveDir := filepath.Join(tmpPath, strings.TrimSuffix(filename, ext))
+	err = os.MkdirAll(saveDir, os.ModePerm)
+	if err != nil {
+		this.JsonResult(goError.NewGoError(500, "创建目录失败"), nil)
+		return
+	}
+
+	// 👉 保存 zip 文件
+	savePath := filepath.Join(saveDir, filename)
+
+	out, err := os.Create(savePath)
+	if err != nil {
+		this.JsonResult(goError.NewGoError(500, "文件创建失败"), nil)
+		return
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, f)
+	if err != nil {
+		this.JsonResult(goError.NewGoError(500, "文件保存失败"), nil)
+		return
+	}
+
+	member := &account.AccountServer{
+		Sess: this.Sess,
+	}
+	rsp := &info.CheckAccountFileRsp{}
+	rsp.Name = h.Filename
+	rsp.FileId = fileId
+	// ✅ 👉 直接调用你的公共方法
+	txtPath, err := wxComm.DoJsonUtils(saveDir)
+	if err != nil {
+		this.JsonResult(goError.NewGoError(500, err.Error()), nil)
+		return
+	}
+	// 👉 正确读取 txt 文件
+	txtFile, err := os.Open(txtPath)
+	if err != nil {
+		this.JsonResult(goError.NewGoError(500, "读取结果文件失败"), nil)
+		return
+	}
+	defer txtFile.Close()
+
+	//string 来源于数据包
+	fileContent, err := ioutil.ReadAll(txtFile)
+	if err != nil {
+		this.JsonResult(goError.NewGoError(400, "数据错误"), nil)
+		return
+	}
+	erro := member.CheckAccountFile(string(fileContent), req, rsp)
+	if erro != nil {
+		this.JsonResult(erro, nil)
+		return
+	}
+	this.JsonResult(goError.SuccRsp, rsp)
+}
+
+//添加账号
+func (this *AccountController) AddAccount() {
+	req := &info.AddAccountReq{}
+	if len(this.Ctx.Input.RequestBody) != 0 {
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		if err != nil {
+			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+			return
+		}
+	}
+	member := &account.AccountServer{
+		Sess: this.Sess,
+	}
+	rsp := &info.AddAccountRsp{}
+	erro := member.AddAccount(req, rsp)
+	if erro != nil {
+		this.JsonResult(erro, nil)
+		return
+	}
+	this.JsonResult(goError.SuccRsp, rsp)
+}
+
+//检查上传状态
+func (this *AccountController) GetAccountSchedule() {
+	req := &info.GetAccountScheduleReq{}
+	if len(this.Ctx.Input.RequestBody) != 0 {
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		if err != nil {
+			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+			return
+		}
+	}
+	member := &account.AccountServer{
+		Sess: this.Sess,
+	}
+	rsp := &info.GetAccountScheduleRsp{}
+	erro := member.GetAccountSchedule(req, rsp)
 	if erro != nil {
 		this.JsonResult(erro, nil)
 		return
