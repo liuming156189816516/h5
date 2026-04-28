@@ -86,9 +86,12 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 	}
 
 	sumwhere := []bson.M{}
-
-	if req.StartTime > 0 && req.EndTime > 0 {
-		sumwhere = append(sumwhere, bson.M{"$match": bson.M{"itime": bson.M{"$gte": req.StartTime, "$lte": req.EndTime}}})
+	if req.AccountGroup != "" {
+		sumwhere = append(sumwhere, bson.M{"$match": bson.M{"account_group": req.AccountGroup}})
+	} else {
+		if req.StartTime > 0 && req.EndTime > 0 {
+			sumwhere = append(sumwhere, bson.M{"$match": bson.M{"itime": bson.M{"$gte": req.StartTime, "$lte": req.EndTime}}})
+		}
 	}
 
 	sumwhere = append(sumwhere, bson.M{
