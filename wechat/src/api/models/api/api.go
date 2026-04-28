@@ -4,7 +4,6 @@ import (
 	info "api/webstru"
 	"comm/comm"
 	"comm/goError"
-	"fmt"
 	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
@@ -27,8 +26,6 @@ func (this *ApiServer) getUid() string {
 }
 
 func (this *ApiServer) Api(req *info.ApiReq, rsp *info.NullRsp) *goError.ErrRsp {
-
-	fmt.Println(jsoniter.MarshalToString(req))
 
 	if req.Account == "" {
 		return goError.GLOBAL_INVALIDPARAM
@@ -53,64 +50,7 @@ func doAccount(req *info.ApiReq) {
 	//账号登陆成功
 	if accountData.Action == "login" {
 		cache.SetAccountStatus(req.Account, 2)
-		accInfo := cache.GetAccountInfo(req.Account)
-		tmp := &accountDB.AccountInfo{}
-		tmp.Id = bson.NewObjectId()
-		tmp.Account = req.Account
-		tmp.Status = 2
-		tmp.AccountType = 1
-		tmp.Itime = time.Now().Unix()
-		tmp.Ptime = time.Now().Unix()
-		tmp.FirstLoginTime = time.Now().Unix()
-		tmp.PixelId = accInfo.PixelId
-		tmp.PlatformType = 2
-		err := accountDB.AddAccountInfo(tmp)
-		if err != nil && strings.Contains(err.Error(), "E11000 duplicate key") {
-			//更新为登录中
-			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "pixel_id": accInfo.PixelId, "reason": "", "first_login_time": time.Now().Unix()})
-		}
-		////发送事件回调
-		////kwai的回调
-		//if accInfo.PixelId == wxComm.PixId {
-		//	go func() {
-		//		fbData := &info.FbData{}
-		//		fbData.Phone = req.Account
-		//		fbData.PixelId = accInfo.PixelId
-		//		tmpFb := &log.FbReportLog{}
-		//		tmpFb.Id = bson.NewObjectId()
-		//		tmpFb.Ptype = 3
-		//		data, _ := jsoniter.MarshalToString(fbData)
-		//		tmpFb.Data = data
-		//		log.AddFbReportLog(tmpFb)
-		//		wxComm.KwaiPlace(accInfo.ClickId, "EVENT_COMPLETE_REGISTRATION")
-		//	}()
-		//}
-		//fbFlag := false
-		////fb的回调
-		//for key, _ := range wxComm.PixelTokens {
-		//	if strings.Contains(key, accInfo.PixelId) {
-		//		fbFlag = true
-		//		break
-		//	}
-		//}
-		//if fbFlag {
-		//	go func() {
-		//		fbData := &info.FbData{}
-		//		fbData.Phone = req.Account
-		//		fbData.PixelId = accInfo.PixelId
-		//		tmpFb := &log.FbReportLog{}
-		//		tmpFb.Id = bson.NewObjectId()
-		//		tmpFb.Ptype = 3
-		//		data, _ := jsoniter.MarshalToString(fbData)
-		//		tmpFb.Data = data
-		//		log.AddFbReportLog(tmpFb)
-		//		fbInfo := cache.FbReport{
-		//			Ptype: 3,
-		//			Phone: req.Account,
-		//		}
-		//		cache.SetFbReport(&fbInfo)
-		//	}()
-		//}
+		accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "reason": "", "first_login_time": time.Now().Unix()})
 		go sendMsg(req.Account, accountData.SessionId, accountData.Node)
 	}
 
@@ -173,18 +113,13 @@ func sendMsg(account, sessionId string, node string) {
 			cache.IncSendMsgTaskInfoCount(cache.SuccessNum, account, 1)
 		}
 
-		//发送失败，还数据
-		//if err1 != nil || !msgResult.Ok {
-		//	cache.SaddDataPackList(config.DataPackId, target)
-		//}
+		//发送失败，还异常数据
+		if err1 != nil || !msgResult.Ok {
+			cache.SaddDataPackListErr(config.DataPackId, target)
+		}
+
 		if cache.GetAccountStatus(account) != 2 {
 			return
 		}
 	}
-
-	////如果账号在线
-	//for cache.GetAccountStatus(account) == 2 {
-	//
-	//
-	//}
 }
