@@ -664,10 +664,12 @@ func (this *AccountServer) AddAccount(req *info.AddAccountReq, rsp *info.AddAcco
 
 // 获取上传结果
 func (this *AccountServer) GetAccountSchedule(req *info.GetAccountScheduleReq, rsp *info.GetAccountScheduleRsp) *goError.ErrRsp {
-	fileInfo := account.GetByIdAccountFile(req.Id)
-	rsp.UpStatus = fileInfo.Status
-	rsp.Success = fileInfo.SuccessNum
-	rsp.Fail = fileInfo.FailNum
+	if req.Id != "" {
+		fileInfo := account.GetByIdAccountFile(req.Id)
+		rsp.UpStatus = fileInfo.Status
+		rsp.Success = fileInfo.SuccessNum
+		rsp.Fail = fileInfo.FailNum
+	}
 	return nil
 }
 
