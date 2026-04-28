@@ -338,6 +338,7 @@ func (this *AccountController) CheckAccountFile() {
 		this.JsonResult(goError.NewGoError(500, "创建目录失败"), nil)
 		return
 	}
+	defer os.RemoveAll(tmpPath)
 
 	// 👉 保存 zip 文件
 	savePath := filepath.Join(saveDir, filename)
@@ -412,6 +413,50 @@ func (this *AccountController) GetAccountSchedule() {
 	}
 	rsp := &info.GetAccountScheduleRsp{}
 	erro := member.GetAccountSchedule(req, rsp)
+	if erro != nil {
+		this.JsonResult(erro, nil)
+		return
+	}
+	this.JsonResult(goError.SuccRsp, rsp)
+}
+
+//入库日志-列表
+func (this *AccountController) GetAccountLogList() {
+	req := &info.GetAccountLogListReq{}
+	if len(this.Ctx.Input.RequestBody) != 0 {
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		if err != nil {
+			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+			return
+		}
+	}
+	member := &account.AccountServer{
+		Sess: this.Sess,
+	}
+	rsp := &info.GetAccountLogListRsp{}
+	erro := member.GetAccountLogList(req, rsp)
+	if erro != nil {
+		this.JsonResult(erro, nil)
+		return
+	}
+	this.JsonResult(goError.SuccRsp, rsp)
+}
+
+//批量导出
+func (this *AccountController) DoOutPutAccountLog() {
+	req := &info.DoOutPutAccountLogReq{}
+	if len(this.Ctx.Input.RequestBody) != 0 {
+		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+		if err != nil {
+			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+			return
+		}
+	}
+	member := &account.AccountServer{
+		Sess: this.Sess,
+	}
+	rsp := &info.DoOutPutAccountLogRsp{}
+	erro := member.DoOutPutAccountLog(req, rsp)
 	if erro != nil {
 		this.JsonResult(erro, nil)
 		return

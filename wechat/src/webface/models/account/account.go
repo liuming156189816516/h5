@@ -13,7 +13,6 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -579,27 +578,12 @@ func (this *AccountServer) CheckAccountFile(accountJsons []wxComm.AccountJson, r
 	failNumber := 0
 	successList := []string{}
 	successNumber := 0
-	exportStr := ""
 	for _, ipStr := range accountJsons {
 		toString, _ := jsoniter.MarshalToString(ipStr)
-		if ipStr.Phone == "" {
-			failNumber++
-			exportStr = exportStr + toString + "\n"
-			continue
-		}
 		successNumber++
 		successList = append(successList, toString)
 	}
-
-	fileName := comm.Md5(exportStr) + ".txt"
-	tmpPath := beego.AppConfig.String("tmpPath")
-	filePath := tmpPath + fileName
-	err := ioutil.WriteFile(filePath, []byte(exportStr), 0777)
-	if err != nil {
-		return goError.GLOBAL_SYSTEMERROR
-	}
-	defer os.Remove(filePath)
-	fileUrl := cos.UploadAwsFile(filePath, fileName)
+	fileUrl := ""
 	rsp.Url = fileUrl
 	rsp.FailNumber = failNumber
 	rsp.SuccessNumber = successNumber
@@ -684,5 +668,145 @@ func (this *AccountServer) GetAccountSchedule(req *info.GetAccountScheduleReq, r
 	rsp.UpStatus = fileInfo.Status
 	rsp.Success = fileInfo.SuccessNum
 	rsp.Fail = fileInfo.FailNum
+	return nil
+}
+
+// 入库日志-列表
+func (this *AccountServer) GetAccountLogList(req *info.GetAccountLogListReq, rsp *info.GetAccountLogListRsp) *goError.ErrRsp {
+	uid := this.Sess.Uid
+	db := comm.GetUserMgoDBName(uid)
+	tb := tableName.GetTableAccountLogListInfo()
+	where := bson.M{}
+	where["file_id"] = req.FileId
+	rsp.List = []*info.GetAccountLogListInfo{}
+	rsp.Total, _ = mgoDeal.QueryMongoCount(db, tb, where)
+	if rsp.Total == 0 {
+		return nil
+	}
+	start := (req.Page - 1) * req.Limit
+	all, err := mgoDeal.RealQueryMongoAll(db, tb, where, "-itime", start, req.Limit)
+	if err != nil {
+		return goError.GLOBAL_SYSTEMERROR
+	}
+	for _, data := range all {
+		tmp := &info.GetAccountLogListInfo{}
+		if p, ok := data["_id"]; ok {
+			tmp.Id = utils.GetString(p)
+		}
+		if p, ok := data["account"]; ok {
+			tmp.Account = utils.GetString(p)
+		}
+		if p, ok := data["status"]; ok {
+			tmp.Status = utils.GetInt64(p)
+		}
+		if p, ok := data["reason"]; ok {
+			tmp.Reason = utils.GetString(p)
+		}
+		rsp.List = append(rsp.List, tmp)
+	}
+	return nil
+}
+
+// 批量导出
+func (this *AccountServer) DoOutPutAccountLog(req *info.DoOutPutAccountLogReq, rsp *info.DoOutPutAccountLogRsp) *goError.ErrRsp {
+
+	tmpPath := beego.AppConfig.String("tmpPath")
+
+	// 👉 创建临时目录
+	dirName := fmt.Sprintf("export_%d", time.Now().UnixNano())
+	baseDir := filepath.Join(tmpPath, dirName)
+
+	if err := os.MkdirAll(baseDir, os.ModePerm); err != nil {
+		return goError.GLOBAL_SYSTEMERROR
+	}
+	defer os.RemoveAll(baseDir)
+
+	for _, id := range req.Ids {
+		where := bson.M{}
+		where["file_id"] = id
+		if req.Ptype == 2 {
+			where["status"] = int64(1)
+		}
+		if req.Ptype == 3 {
+			where["status"] = int64(2)
+		}
+		accList := account.GetListAccountLog(where, -1)
+		for _, logInfo := range accList {
+			if logInfo.Token == "" {
+				continue
+			}
+			// ✅ 关键：把 Token（JSON字符串）解析成对象
+			var obj interface{}
+			if err := json.Unmarshal([]byte(logInfo.Token), &obj); err != nil {
+				fmt.Println("非法JSON:", logInfo.Account, err)
+				continue
+			}
+
+			data, err := json.Marshal(obj)
+			if err != nil {
+				continue
+			}
+
+			// 👉 文件名：账号.json（防路径攻击）
+			fileName := filepath.Base(logInfo.Account) + ".json"
+			filePath := filepath.Join(baseDir, fileName)
+
+			if err := os.WriteFile(filePath, data, 0644); err != nil {
+				continue
+			}
+		}
+	}
+	// 👉 2. 创建 zip 文件
+	zipName := fmt.Sprintf("%d.zip", time.Now().UnixNano())
+	zipPath := filepath.Join(tmpPath, zipName)
+
+	zipFile, err := os.Create(zipPath)
+	if err != nil {
+		return goError.GLOBAL_SYSTEMERROR
+	}
+	defer zipFile.Close()
+	defer os.Remove(zipPath)
+
+	zipWriter := zip.NewWriter(zipFile)
+
+	// 👉 3. 写入 zip
+	err = filepath.Walk(baseDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		file, err := os.Open(path)
+		if err != nil {
+			return nil
+		}
+		defer file.Close()
+
+		// zip 内文件名（只保留文件名）
+		zipEntryName := filepath.Base(path)
+
+		writer, err := zipWriter.Create(zipEntryName)
+		if err != nil {
+			return nil
+		}
+
+		_, err = io.Copy(writer, file)
+		return err
+	})
+
+	if err != nil {
+		return goError.GLOBAL_SYSTEMERROR
+	}
+
+	if err := zipWriter.Close(); err != nil {
+		return goError.GLOBAL_SYSTEMERROR
+	}
+
+	// 👉 4. 上传 zip
+	fileUrl := cos.UploadAwsFile(zipPath, zipName)
+	rsp.Url = fileUrl
 	return nil
 }
