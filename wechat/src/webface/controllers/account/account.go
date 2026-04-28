@@ -6,7 +6,6 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"selfComm/wxComm"
@@ -363,26 +362,12 @@ func (this *AccountController) CheckAccountFile() {
 	rsp.Name = h.Filename
 	rsp.FileId = fileId
 	// ✅ 👉 直接调用你的公共方法
-	txtPath, err := wxComm.DoJsonUtils(saveDir)
+	accountJsons, err := wxComm.DoJsonUtils(saveDir)
 	if err != nil {
 		this.JsonResult(goError.NewGoError(500, err.Error()), nil)
 		return
 	}
-	// 👉 正确读取 txt 文件
-	txtFile, err := os.Open(txtPath)
-	if err != nil {
-		this.JsonResult(goError.NewGoError(500, "读取结果文件失败"), nil)
-		return
-	}
-	defer txtFile.Close()
-
-	//string 来源于数据包
-	fileContent, err := ioutil.ReadAll(txtFile)
-	if err != nil {
-		this.JsonResult(goError.NewGoError(400, "数据错误"), nil)
-		return
-	}
-	erro := member.CheckAccountFile(string(fileContent), req, rsp)
+	erro := member.CheckAccountFile(accountJsons, req, rsp)
 	if erro != nil {
 		this.JsonResult(erro, nil)
 		return

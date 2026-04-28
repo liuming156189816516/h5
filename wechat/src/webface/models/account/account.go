@@ -20,7 +20,6 @@ import (
 	"selfComm/db/account"
 	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
-	"strings"
 	"time"
 	"utils"
 	info "webface/webstru"
@@ -576,25 +575,20 @@ func (this *AccountServer) DoBathDelAccountFile(req *info.DoBathDelAccountFileRe
 }
 
 // 检查文件
-func (this *AccountServer) CheckAccountFile(fileContent string, req *info.NullReq, rsp *info.CheckAccountFileRsp) *goError.ErrRsp {
-	fileContent = strings.ReplaceAll(fileContent, "\r\n", "\n")
-	fileContent = strings.ReplaceAll(fileContent, "\n\n", "\n")
-	fileContent = strings.ReplaceAll(fileContent, "\r", "\n")
-	ipStrArr := strings.Split(fileContent, "\n")
+func (this *AccountServer) CheckAccountFile(accountJsons []wxComm.AccountJson, req *info.NullReq, rsp *info.CheckAccountFileRsp) *goError.ErrRsp {
 	failNumber := 0
 	successList := []string{}
 	successNumber := 0
 	exportStr := ""
-	for _, ipStr := range ipStrArr {
-		upAccount := info.UpJsonAccount{}
-		jsoniter.UnmarshalFromString(ipStr, &upAccount)
-		if upAccount.Phone == "" {
+	for _, ipStr := range accountJsons {
+		toString, _ := jsoniter.MarshalToString(ipStr)
+		if ipStr.Phone == "" {
 			failNumber++
-			exportStr = exportStr + ipStr + "\n"
+			exportStr = exportStr + toString + "\n"
 			continue
 		}
 		successNumber++
-		successList = append(successList, ipStr)
+		successList = append(successList, toString)
 	}
 
 	fileName := comm.Md5(exportStr) + ".txt"
@@ -616,6 +610,10 @@ func (this *AccountServer) CheckAccountFile(fileContent string, req *info.NullRe
 // 添加账号
 func (this *AccountServer) AddAccount(req *info.AddAccountReq, rsp *info.AddAccountRsp) *goError.ErrRsp {
 	uid := this.Sess.Uid
+	if req.FileId == "" {
+		return goError.GLOBAL_SYSTEMERROR
+	}
+
 	tmp1 := &account.AccountFile{}
 	tmp1.Id = bson.ObjectIdHex(req.FileId)
 	tmp1.Name = req.Name
@@ -631,11 +629,10 @@ func (this *AccountServer) AddAccount(req *info.AddAccountReq, rsp *info.AddAcco
 		logList := make([]interface{}, 0)
 		accList := make([]interface{}, 0)
 		for _, accountStr := range req.SuccessList {
-			acc := ""
-			token := accountStr
-			upAccount := info.UpJsonAccount{}
-			jsoniter.UnmarshalFromString(accountStr, &upAccount)
-			acc = upAccount.Phone
+			accountJson := wxComm.AccountJson{}
+			jsoniter.UnmarshalFromString(accountStr, &accountJson)
+			acc := accountJson.Phone
+			token, _ := jsoniter.MarshalToString(accountJson.Token)
 
 			tmp2 := &account.AccountLog{}
 			tmp2.Id = bson.NewObjectId()

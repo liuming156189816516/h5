@@ -11,7 +11,17 @@ import (
 	"strings"
 )
 
-func processZip(r *zip.Reader, out *os.File) {
+// 👉 返回结构
+type AccountJson struct {
+	Phone string      `json:"phone"`
+	Token interface{} `json:"token"`
+}
+
+// 👉 递归处理 zip（支持嵌套 zip）
+func processZip(r *zip.Reader) []AccountJson {
+
+	var result []AccountJson
+
 	for _, f := range r.File {
 
 		if f.FileInfo().IsDir() {
@@ -33,36 +43,57 @@ func processZip(r *zip.Reader, out *os.File) {
 
 		name := strings.ToLower(f.Name)
 
+		// ✅ 处理 JSON 文件
 		if strings.HasSuffix(name, ".json") {
-			var buf bytes.Buffer
-			if err := json.Compact(&buf, data); err != nil {
-				fmt.Println("非法 JSON:", f.Name)
+
+			// 👉 解析 JSON（token）
+			var obj interface{}
+			if err := json.Unmarshal(data, &obj); err != nil {
+				fmt.Println("非法JSON:", f.Name)
 				continue
 			}
 
-			out.Write(buf.Bytes())
-			out.Write([]byte("\n"))
+			// 👉 文件名 → phone（只取 "_" 前面部分）
+			baseName := strings.TrimSuffix(filepath.Base(f.Name), filepath.Ext(f.Name))
+			parts := strings.Split(baseName, "_")
+
+			phone := baseName
+			if len(parts) > 0 {
+				phone = parts[0]
+			}
+
+			result = append(result, AccountJson{
+				Phone: phone,
+				Token: obj,
+			})
+
 			continue
 		}
 
+		// ✅ 处理嵌套 zip
 		if strings.HasSuffix(name, ".zip") {
 			reader := bytes.NewReader(data)
+
 			nestedZip, err := zip.NewReader(reader, int64(len(data)))
 			if err != nil {
 				fmt.Println("嵌套zip解析失败:", f.Name)
 				continue
 			}
-			processZip(nestedZip, out)
+
+			nested := processZip(nestedZip)
+			result = append(result, nested...)
 		}
 	}
+
+	return result
 }
 
-func DoJsonUtils(dir string) (string, error) {
+// 👉 主入口：传入目录，返回 Account 集合
+func DoJsonUtils(dir string) ([]AccountJson, error) {
 
-	var zipNames []string
 	var zipPaths []string
 
-	// 👉 扫描指定目录
+	// 👉 扫描目录
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return nil
@@ -70,34 +101,20 @@ func DoJsonUtils(dir string) (string, error) {
 
 		if !info.IsDir() && strings.HasSuffix(strings.ToLower(path), ".zip") {
 			zipPaths = append(zipPaths, path)
-
-			base := filepath.Base(path)
-			name := strings.TrimSuffix(base, filepath.Ext(base))
-			zipNames = append(zipNames, name)
 		}
 		return nil
 	})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if len(zipPaths) == 0 {
-		return "", fmt.Errorf("目录下没有找到 zip 文件")
+		return nil, fmt.Errorf("目录下没有找到 zip 文件")
 	}
 
-	// 👉 输出文件（放在该目录下）
-	outFileName := strings.Join(zipNames, "-") + ".txt"
-	outPath := filepath.Join(dir, outFileName)
+	var allAccounts []AccountJson
 
-	out, err := os.Create(outPath)
-	if err != nil {
-		return "", err
-	}
-	defer out.Close()
-
-	fmt.Println("输出文件:", outPath)
-
-	// 👉 处理 zip
+	// 👉 处理所有 zip
 	for _, path := range zipPaths {
 		fmt.Println("处理:", path)
 
@@ -107,11 +124,13 @@ func DoJsonUtils(dir string) (string, error) {
 			continue
 		}
 
-		processZip(&r.Reader, out)
+		result := processZip(&r.Reader)
+		allAccounts = append(allAccounts, result...)
+
 		r.Close()
 	}
 
 	fmt.Println("完成 ✅")
 
-	return outPath, nil
+	return allAccounts, nil
 }
