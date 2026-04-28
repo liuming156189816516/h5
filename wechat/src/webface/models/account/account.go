@@ -387,7 +387,7 @@ func (this *AccountServer) DoBatchFastLogin(req *info.DoBatchFastLoginReq, rsp *
 			bson.M{"status": int64(3)},
 		)
 
-		for _, accountInfo := range list {
+		for i, accountInfo := range list {
 
 			importJson, err := wxComm.ImportJson(
 				accountInfo.Account,
@@ -402,10 +402,10 @@ func (this *AccountServer) DoBatchFastLogin(req *info.DoBatchFastLoginReq, rsp *
 			}
 
 			// ✅ 2️⃣ 每50个暂停20秒
-			/*if (i+1)%50 == 0 {
+			if (i+1)%50 == 0 {
 				fmt.Println("已处理:", i+1, "暂停20秒...")
 				time.Sleep(20 * time.Second)
-			}*/
+			}
 		}
 
 	}(accinfoList)
@@ -485,7 +485,7 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 			bson.M{"status": int64(3)},
 		)
 
-		for _, accountInfo := range list {
+		for i, accountInfo := range list {
 
 			importJson, err := wxComm.ImportJson(
 				accountInfo.Account,
@@ -500,10 +500,10 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 			}
 
 			// ✅ 2️⃣ 每50个暂停20秒
-			/*if (i+1)%50 == 0 {
+			if (i+1)%50 == 0 {
 				fmt.Println("已处理:", i+1, "暂停20秒...")
 				time.Sleep(20 * time.Second)
-			}*/
+			}
 		}
 
 	}(accinfoList)
