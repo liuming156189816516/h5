@@ -338,7 +338,7 @@ func (this *AccountController) CheckAccountFile() {
 		this.JsonResult(goError.NewGoError(500, "创建目录失败"), nil)
 		return
 	}
-	defer os.RemoveAll(tmpPath)
+	//defer os.RemoveAll(tmpPath)
 
 	// 👉 保存 zip 文件
 	savePath := filepath.Join(saveDir, filename)
