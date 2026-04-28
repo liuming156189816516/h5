@@ -673,8 +673,7 @@ func (this *AccountServer) GetAccountSchedule(req *info.GetAccountScheduleReq, r
 
 // 入库日志-列表
 func (this *AccountServer) GetAccountLogList(req *info.GetAccountLogListReq, rsp *info.GetAccountLogListRsp) *goError.ErrRsp {
-	uid := this.Sess.Uid
-	db := comm.GetUserMgoDBName(uid)
+	db := comm.GetMgoDBName()
 	tb := tableName.GetTableAccountLogListInfo()
 	where := bson.M{}
 	where["file_id"] = req.FileId
