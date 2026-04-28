@@ -3,6 +3,7 @@ package cache
 // 账号信息
 type AccountInfo struct {
 	Account      string `json:"account"`       //账号
+	AccountGroup string `json:"account_group"` //账号分组
 	AccountType  int64  `json:"account_type"`  //账号类型 1-个人号 2-商业号
 	Token        string `json:"token"`         //token
 	PlatformType int64  `json:"platform_type"` //平台类型 1-云控 2-APP

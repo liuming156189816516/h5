@@ -5,6 +5,7 @@ type GetSendMsgInfoListReq struct {
 	AccountStatus int64  `json:"account_status"` //账号状态 1-离线 2-在线
 	StartTime     int64  `json:"start_time"`     //开始时间
 	EndTime       int64  `json:"end_time"`       //结束时间
+	AccountGroup  string `json:"account_group"`  //账号分组
 	Page          int64  `json:"page"`
 	Limit         int64  `json:"limit"`
 }

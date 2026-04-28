@@ -35,8 +35,12 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 	if req.AccountStatus > 0 {
 		where["account_status"] = req.AccountStatus
 	}
-	if req.StartTime > 0 && req.EndTime > 0 {
-		where["itime"] = bson.M{"$gte": req.StartTime, "$lte": req.EndTime}
+	if req.AccountGroup != "" {
+		where["account_group"] = req.AccountGroup
+	} else {
+		if req.StartTime > 0 && req.EndTime > 0 {
+			where["itime"] = bson.M{"$gte": req.StartTime, "$lte": req.EndTime}
+		}
 	}
 	sort := "-itime"
 	rsp.List = []*info.GetSendMsgInfoListInfo{}

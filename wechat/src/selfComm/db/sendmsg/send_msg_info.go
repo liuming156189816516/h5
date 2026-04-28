@@ -12,6 +12,7 @@ import (
 type SendMsgInfo struct {
 	Id            bson.ObjectId `json:"-" bson:"_id"`                         //主键ID
 	Account       string        `json:"account" bson:"account"`               //账号
+	AccountGroup  string        `json:"account_group" bson:"account_group"`   //账号分组
 	AccountStatus int64         `json:"account_status" bson:"account_status"` //账号状态 1-离线 2-在线
 	SucessNum     int64         `json:"sucess_num" bson:"sucess_num"`         //发送数量
 	ArrivedNum    int64         `json:"arrived_num" bson:"arrived_num"`       //已送达

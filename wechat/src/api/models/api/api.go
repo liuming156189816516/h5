@@ -50,7 +50,20 @@ func doAccount(req *info.ApiReq) {
 	//账号登陆成功
 	if accountData.Action == "login" {
 		cache.SetAccountStatus(req.Account, 2)
-		accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "reason": "", "first_login_time": time.Now().Unix()})
+		tmp := &accountDB.AccountInfo{}
+		tmp.Id = bson.NewObjectId()
+		tmp.Account = req.Account
+		tmp.Status = 2
+		tmp.AccountType = 1
+		tmp.Itime = time.Now().Unix()
+		tmp.Ptime = time.Now().Unix()
+		tmp.FirstLoginTime = time.Now().Unix()
+		tmp.PlatformType = 2
+		err := accountDB.AddAccountInfo(tmp)
+		if err != nil && strings.Contains(err.Error(), "E11000 duplicate key") {
+			//更新为登录中
+			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "reason": "", "first_login_time": time.Now().Unix()})
+		}
 		go sendMsg(req.Account, accountData.SessionId, accountData.Node)
 	}
 
@@ -78,15 +91,16 @@ func sendMsg(account, sessionId string, node string) {
 	config := cache.GetTaskConfig("global")
 	mList := config.MaterialList
 	material := mList[0]
-
+	accountInfo := cache.GetAccountInfo(account)
 	tmp2 := &sendmsg.SendMsgInfo{}
 	tmp2.Id = bson.NewObjectId()
 	tmp2.Account = account
 	tmp2.AccountStatus = 2
+	tmp2.AccountGroup = accountInfo.AccountGroup
 	err := sendmsg.AddSendMsgInfo(tmp2)
 	if err != nil && strings.Contains(err.Error(), "E11000 duplicate key") {
 		//更新为登录成功
-		sendmsg.UpSendMsgInfo(bson.M{"account": account}, bson.M{"account_status": 2})
+		sendmsg.UpSendMsgInfo(bson.M{"account": account}, bson.M{"account_status": 2, "account_group": accountInfo.AccountGroup})
 	}
 
 	// 消息发送的开关

@@ -218,7 +218,17 @@ func (this *AccountServer) GetAccountInfoList(req *info.GetAccountInfoListReq, r
 
 // 移动至其他分组
 func (this *AccountServer) DoUpGroup(req *info.DoUpGroupReq, rsp *info.NullRsp) *goError.ErrRsp {
-	account.UpAccountInfo(bson.M{"account": bson.M{"$in": req.Accounts}}, bson.M{"group_id": req.GroupId})
+	if len(req.Accounts) > 0 {
+		err := account.UpAccountInfo(bson.M{"account": bson.M{"$in": req.Accounts}}, bson.M{"group_id": req.GroupId})
+		if err == nil {
+			for _, acc := range req.Accounts {
+				accountInfo := cache.GetAccountInfo(acc)
+				accountInfo.AccountGroup = req.GroupId
+				cache.SetAccountInfo(acc, accountInfo)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -655,9 +665,10 @@ func (this *AccountServer) AddAccount(req *info.AddAccountReq, rsp *info.AddAcco
 				cache.SetAllAccountList(tmp.Account)
 				cache.SetAccountStatus(tmp.Account, tmp.Status)
 				accInfo := &cache.AccountInfo{
-					Account:     tmp.Account,
-					AccountType: tmp.AccountType,
-					Token:       tmp.Token,
+					Account:      tmp.Account,
+					AccountType:  tmp.AccountType,
+					Token:        tmp.Token,
+					AccountGroup: req.GroupId,
 				}
 				cache.SetAccountInfo(tmp.Account, accInfo)
 			}
