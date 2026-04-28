@@ -130,13 +130,5 @@ func DoJsonUtils(dir string) ([]AccountJson, error) {
 		r.Close()
 	}
 
-	fmt.Println("完成 ✅")
-	fmt.Println("完成 len(allAccounts)", len(allAccounts))
-	list := []string{}
-	for _, account := range allAccounts {
-		list = append(list, account.Phone)
-	}
-	fmt.Println("list", list)
-
 	return allAccounts, nil
 }
