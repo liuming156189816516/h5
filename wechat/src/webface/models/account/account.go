@@ -260,8 +260,7 @@ func (this *AccountServer) DoOutPutAccount(req *info.DoOutPutAccountReq, rsp *in
 			continue
 		}
 
-		// 👉 再格式化输出
-		data, err := json.MarshalIndent(obj, "", "  ")
+		data, err := json.Marshal(obj)
 		if err != nil {
 			continue
 		}
