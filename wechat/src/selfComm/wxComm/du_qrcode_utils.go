@@ -43,7 +43,7 @@ func QrcodeUtils(phone string) *QrcodeUtilsRsp {
 	})
 	ret := &QrcodeUtilsRsp{}
 	if rsp.Err == nil {
-		logs.Info("QrcodeUtils result: " + string(rsp.Body))
+		//logs.Info("QrcodeUtils result: " + string(rsp.Body))
 		jsoniter.UnmarshalFromString(string(rsp.Body), &ret)
 	} else {
 		logs.Info("QrcodeUtils err  phone: " + phone + rsp.Err.Error())

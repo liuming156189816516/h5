@@ -39,11 +39,11 @@ func ImportJson(account string, param interface{}) (*ImportJsonRsp, error) {
 	})
 	ret := &ImportJsonRsp{}
 	if rsp.Err == nil {
-		logs.Info("ImportJson result: " + string(rsp.Body))
+		//logs.Info("ImportJson result: " + string(rsp.Body))
 		jsoniter.UnmarshalFromString(string(rsp.Body), &ret)
-		return ret, rsp.Err
 	} else {
 		logs.Info("ImportJson err  account: " + account + rsp.Err.Error())
+		return ret, rsp.Err
 	}
 
 	return ret, nil
