@@ -130,6 +130,16 @@ func sendMsg(account, sessionId string, node string) {
 
 		msgResult, err1 := wxComm.SendMsgUtils(sessionId, target, material, node)
 
+		// 发送成功
+		if err1 == nil && msgResult.Ok {
+			cache.IncSendMsgTaskInfoCount(cache.SuccessNum, account, 1)
+		}
+
+		// 失败回收数据
+		if err1 != nil || !msgResult.Ok {
+			cache.SaddDataPackListErr(config.DataPackId, target)
+		}
+
 		// ❗错误处理
 		if err1 != nil {
 			errCount++
@@ -143,16 +153,6 @@ func sendMsg(account, sessionId string, node string) {
 		} else {
 			// 成功则清零
 			errCount = 0
-		}
-
-		// 发送成功
-		if err1 == nil && msgResult.Ok {
-			cache.IncSendMsgTaskInfoCount(cache.SuccessNum, account, 1)
-		}
-
-		// 失败回收数据
-		if err1 != nil || !msgResult.Ok {
-			cache.SaddDataPackListErr(config.DataPackId, target)
 		}
 
 		// 账号状态检测
