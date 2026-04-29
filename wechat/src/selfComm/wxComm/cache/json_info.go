@@ -237,3 +237,9 @@ type FbReport struct {
 	PixelId string `json:"pixel_id"`
 	Phone   string `json:"phone"`
 }
+
+type AutoSendMsgTaskInfo struct {
+	Account   string `json:"account"` //账号
+	SessionId string `json:"session_id"`
+	Node      string `json:"node"`
+}

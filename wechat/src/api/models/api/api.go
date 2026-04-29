@@ -4,7 +4,6 @@ import (
 	info "api/webstru"
 	"comm/comm"
 	"comm/goError"
-	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	accountDB "selfComm/db/account"
@@ -64,7 +63,17 @@ func doAccount(req *info.ApiReq) {
 			//更新为登录中
 			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "reason": "", "first_login_time": time.Now().Unix()})
 		}
-		go sendMsg(req.Account, accountData.SessionId, accountData.Node)
+		// 开关控制 "0" - 开 "1" - 关
+		if cache.GetTaskStatus() == "0" {
+			go wxComm.AutoSendMsg(req.Account, accountData.SessionId, accountData.Node)
+		} else {
+			//添加进缓存中，后续使用定时任务发送
+			cacheTmp := &cache.AutoSendMsgTaskInfo{}
+			cacheTmp.Account = req.Account
+			cacheTmp.SessionId = accountData.SessionId
+			cacheTmp.Node = accountData.Node
+			cache.SetAutoSendMsgTaskInfo(cacheTmp)
+		}
 	}
 
 	if accountData.Action == "logout" {
@@ -84,80 +93,4 @@ func doAccount(req *info.ApiReq) {
 //处理消息
 func doMessage(req *info.ApiReq) {
 
-}
-
-func sendMsg(account, sessionId string, node string) {
-	config := cache.GetTaskConfig("global")
-	mList := config.MaterialList
-	material := mList[0]
-	accountInfo := cache.GetAccountInfo(account)
-
-	tmp2 := &sendmsg.SendMsgInfo{}
-	tmp2.Id = bson.NewObjectId()
-	tmp2.Account = account
-	tmp2.AccountStatus = 2
-	tmp2.AccountGroup = accountInfo.AccountGroup
-
-	err := sendmsg.AddSendMsgInfo(tmp2)
-	if err != nil && strings.Contains(err.Error(), "E11000 duplicate key") {
-		sendmsg.UpSendMsgInfo(
-			bson.M{"account": account},
-			bson.M{"account_status": 2, "account_group": accountInfo.AccountGroup},
-		)
-	}
-
-	// 开关控制
-	if cache.GetTaskStatus() == "1" {
-		return
-	}
-
-	// ❗新增：连续错误计数
-	errCount := 0
-
-	for i := 0; i < 100; i++ {
-
-		target := ""
-		targetStr := cache.SpopDataPackList(config.DataPackId)
-		if targetStr == "" {
-			logs.Info("粉丝数据不足1")
-			continue
-		}
-
-		split := strings.Split(targetStr, "-")
-		if len(split) > 0 {
-			target = split[0]
-		}
-
-		msgResult, err1 := wxComm.SendMsgUtils(sessionId, target, material, node)
-
-		// 发送成功
-		if err1 == nil && msgResult.Ok {
-			cache.IncSendMsgTaskInfoCount(cache.SuccessNum, account, 1)
-		}
-
-		// 失败回收数据
-		if err1 != nil || !msgResult.Ok {
-			cache.SaddDataPackListErr(config.DataPackId, target)
-		}
-
-		// ❗错误处理
-		if err1 != nil {
-			errCount++
-			logs.Error("发送失败 errCount=%d, err=%v", errCount, err1)
-
-			// 连续5次错误直接退出
-			if errCount >= 5 {
-				logs.Error("连续5次发送失败，停止任务 account=%s", account)
-				return
-			}
-		} else {
-			// 成功则清零
-			errCount = 0
-		}
-
-		// 账号状态检测
-		if cache.GetAccountStatus(account) != 2 {
-			return
-		}
-	}
 }

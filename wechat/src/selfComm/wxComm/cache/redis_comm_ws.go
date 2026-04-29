@@ -164,3 +164,23 @@ func GetSendMsgTaskInfo() *SendMsgTaskInfo {
 func LenSendMsgTaskInfo() int64 {
 	return redisDeal.RedisDoLLen(redisKeys.GetAllSendMsgTaskList())
 }
+
+// ======================================================================================================================
+// 自动发送任务列表
+func SetAutoSendMsgTaskInfo(tmp *AutoSendMsgTaskInfo) {
+	redisDeal.RedisSendLpush(redisKeys.GetAutoAllSendMsgTaskList(), tmp)
+}
+
+func GetAutoSendMsgTaskInfo() *AutoSendMsgTaskInfo {
+	tmp := &AutoSendMsgTaskInfo{}
+	rpopStr := redisDeal.RedisDoRpop(redisKeys.GetAutoAllSendMsgTaskList())
+	if rpopStr != "" {
+		jsoniter.UnmarshalFromString(rpopStr, &tmp)
+	}
+	time.Sleep(4 * time.Millisecond)
+	return tmp
+}
+
+func LenAutoSendMsgTaskInfo() int64 {
+	return redisDeal.RedisDoLLen(redisKeys.GetAutoAllSendMsgTaskList())
+}

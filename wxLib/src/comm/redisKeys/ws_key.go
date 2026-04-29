@@ -178,5 +178,10 @@ func GetGroupLinkPackAwardListKey() string {
 	return fmt.Sprintf("%s_group_link_pack_award_list_key", comm.GetMgoDBName())
 }
 
+//获取所有自动群发任务
+func GetAutoAllSendMsgTaskList() string {
+	return fmt.Sprintf("%s_auto_all_send_msg_task_list_key", comm.GetMgoDBName())
+}
+
 
 

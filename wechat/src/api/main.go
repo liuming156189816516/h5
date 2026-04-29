@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/models/autoSendmsg"
 	_ "api/routers"
 	"comm/mgoDeal"
 	"comm/redisDeal"
@@ -76,6 +77,8 @@ func main() {
 		println("InitEvent", err)
 		return
 	}
+
+	go autoSendmsg.TaskRun()
 
 	//启动服务器
 	l.Println("start api ...")
