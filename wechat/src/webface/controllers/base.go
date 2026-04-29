@@ -37,7 +37,7 @@ func tryLock(uid string, cmd string) bool {
 	defer lm.Unlock()
 	t := time.Now().UnixNano()
 	if v, ok := localLocker[key]; ok {
-		if v > t-int64(100*time.Millisecond) {
+		if v > t-int64(2*time.Second) {
 			return false
 		}
 	}
