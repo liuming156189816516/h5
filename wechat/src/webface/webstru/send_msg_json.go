@@ -26,3 +26,11 @@ type GetSendMsgInfoListInfo struct {
 	Itime         int64  `json:"itime"`           //创建时间
 	Ptime         int64  `json:"ptime"`           //更新时间
 }
+
+type DoAutoSendMsgStatusReq struct {
+	AutoSendMsgStatus string `json:"auto_send_msg_status"` //自动发送消息开关 "0" - 开; "1" - 关
+}
+
+type GetAutoSendMsgStatusRsp struct {
+	AutoSendMsgStatus string `json:"auto_send_msg_status"` //自动发送消息开关 "0" - 开; "1" - 关
+}

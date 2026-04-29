@@ -153,3 +153,15 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 	}()
 	return nil
 }
+
+// 获取自动发送消息开关 "0" - 开; "1" - 关
+func (this *SendMsgServer) GetAutoSendMsgStatus(req *info.NullReq, rsp *info.GetAutoSendMsgStatusRsp) *goError.ErrRsp {
+	rsp.AutoSendMsgStatus = cache.GetTaskStatus()
+	return nil
+}
+
+// 自动发送消息开关-修改 "0" - 开; "1" - 关
+func (this *SendMsgServer) DoAutoSendMsgStatus(req *info.DoAutoSendMsgStatusReq, rsp *info.NullRsp) *goError.ErrRsp {
+	cache.SetTaskStatus(req.AutoSendMsgStatus)
+	return nil
+}
