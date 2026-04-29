@@ -5,7 +5,6 @@ import (
 	"github.com/json-iterator/go"
 	"webface/controllers"
 	"webface/models/sendmsg"
-	"webface/models/taskConfig"
 	"webface/webstru"
 )
 
@@ -45,11 +44,11 @@ func (this *SendMsgController) GetAutoSendMsgStatus() {
 			return
 		}
 	}
-	member := &taskConfig.TaskConfigServer{
+	member := &sendmsg.SendMsgServer{
 		Sess: this.Sess,
 	}
-	rsp := &info.GetTaskConfigInfoRsp{}
-	erro := member.GetTaskConfigInfo(req, rsp)
+	rsp := &info.GetAutoSendMsgStatusRsp{}
+	erro := member.GetAutoSendMsgStatus(req, rsp)
 	if erro != nil {
 		this.JsonResult(erro, nil)
 		return
@@ -59,7 +58,7 @@ func (this *SendMsgController) GetAutoSendMsgStatus() {
 
 // 自动发送消息开关-修改 "0"-开; "1"-关
 func (this *SendMsgController) DoAutoSendMsgStatus() {
-	req := &info.DoTaskConfigInfoReq{}
+	req := &info.DoAutoSendMsgStatusReq{}
 	if len(this.Ctx.Input.RequestBody) != 0 {
 		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
 		if err != nil {
@@ -67,11 +66,11 @@ func (this *SendMsgController) DoAutoSendMsgStatus() {
 			return
 		}
 	}
-	member := &taskConfig.TaskConfigServer{
+	member := &sendmsg.SendMsgServer{
 		Sess: this.Sess,
 	}
 	rsp := &info.NullRsp{}
-	erro := member.DoTaskConfigInfo(req, rsp)
+	erro := member.DoAutoSendMsgStatus(req, rsp)
 	if erro != nil {
 		this.JsonResult(erro, nil)
 		return
