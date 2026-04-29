@@ -30,14 +30,12 @@ func processZip(r *zip.Reader) []AccountJson {
 
 		rc, err := f.Open()
 		if err != nil {
-			fmt.Println("打开失败:", f.Name)
 			continue
 		}
 
 		data, err := io.ReadAll(rc)
 		rc.Close()
 		if err != nil {
-			fmt.Println("读取失败:", f.Name)
 			continue
 		}
 
@@ -49,7 +47,6 @@ func processZip(r *zip.Reader) []AccountJson {
 			// 👉 解析 JSON（token）
 			var obj interface{}
 			if err := json.Unmarshal(data, &obj); err != nil {
-				fmt.Println("非法JSON:", f.Name)
 				continue
 			}
 
@@ -76,7 +73,6 @@ func processZip(r *zip.Reader) []AccountJson {
 
 			nestedZip, err := zip.NewReader(reader, int64(len(data)))
 			if err != nil {
-				fmt.Println("嵌套zip解析失败:", f.Name)
 				continue
 			}
 
@@ -116,11 +112,8 @@ func DoJsonUtils(dir string) ([]AccountJson, error) {
 
 	// 👉 处理所有 zip
 	for _, path := range zipPaths {
-		fmt.Println("处理:", path)
-
 		r, err := zip.OpenReader(path)
 		if err != nil {
-			fmt.Println("打开失败:", path)
 			continue
 		}
 

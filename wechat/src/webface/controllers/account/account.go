@@ -368,6 +368,12 @@ func (this *AccountController) CheckAccountFile() {
 		this.JsonResult(goError.NewGoError(500, err.Error()), nil)
 		return
 	}
+
+	if len(accountJsons) <= 0 {
+		this.JsonResult(goError.NewGoError(500, "上传的zip为空"), nil)
+		return
+	}
+
 	erro := member.CheckAccountFile(accountJsons, req, rsp)
 	if erro != nil {
 		this.JsonResult(erro, nil)
