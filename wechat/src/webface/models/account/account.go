@@ -19,6 +19,7 @@ import (
 	"selfComm/db/account"
 	"selfComm/wxComm"
 	"selfComm/wxComm/cache"
+	"sync"
 	"time"
 	"utils"
 	info "webface/webstru"
@@ -375,38 +376,60 @@ func (this *AccountServer) DoBatchFastLogin(req *info.DoBatchFastLoginReq, rsp *
 
 	go func(list []*account.AccountInfo) {
 
-		// 👉 提取账号字符串（修复 bug）
+		// =========================
+		// 1️⃣ 批量更新为登录中
+		// =========================
 		var accNames []string
 		for _, v := range list {
 			accNames = append(accNames, v.Account)
 		}
 
-		// 👉 批量更新状态 = 3（登录中）
 		account.UpAccountInfo(
 			bson.M{"account": bson.M{"$in": accNames}},
 			bson.M{"status": int64(3)},
 		)
 
-		for i, accountInfo := range list {
+		// =========================
+		// 2️⃣ 50并发控制
+		// =========================
+		const maxConcurrent = 50
+		sem := make(chan struct{}, maxConcurrent)
 
-			importJson, err := wxComm.ImportJson(
-				accountInfo.Account,
-				json.RawMessage(accountInfo.Token),
-			)
+		var wg sync.WaitGroup
 
-			if err != nil || !importJson.Ok {
-				account.UpAccountInfo(
-					bson.M{"account": accountInfo.Account},
-					bson.M{"status": int64(4)},
+		for _, accountInfo := range list {
+
+			wg.Add(1)
+			sem <- struct{}{} // 获取一个并发槽
+
+			go func(acc *account.AccountInfo) {
+				defer wg.Done()
+				defer func() { <-sem }() // 释放槽位
+
+				defer func() {
+					if r := recover(); r != nil {
+						fmt.Println("panic:", r)
+					}
+				}()
+
+				importJson, err := wxComm.ImportJson(
+					acc.Account,
+					json.RawMessage(acc.Token),
 				)
-			}
 
-			// ✅ 2️⃣ 每50个暂停20秒
-			if (i+1)%50 == 0 {
-				fmt.Println("已处理:", i+1, "暂停20秒...")
-				time.Sleep(20 * time.Second)
-			}
+				if err != nil || !importJson.Ok {
+					account.UpAccountInfo(
+						bson.M{"account": acc.Account},
+						bson.M{"status": int64(4)},
+					)
+					return
+				}
+
+			}(accountInfo)
 		}
+
+		// 等待全部完成
+		wg.Wait()
 
 	}(accinfoList)
 	return nil
@@ -447,25 +470,19 @@ func (this *AccountServer) DoFreedIp(req *info.DoFreedIpReq, rsp *info.NullRsp) 
 	return nil
 }
 
-// 批量上线
 func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.NullRsp) *goError.ErrRsp {
 
-	accList := []*account.AccountInfo{}
 	w := bson.M{}
 	w["status"] = bson.M{"$ne": int64(3)}
 	w["account"] = bson.M{"$in": req.Accounts}
 
 	accinfoList := account.GetListAccountInfo(w, -1)
 
-	for _, accountInfo := range accinfoList {
-		accList = append(accList, accountInfo)
-	}
-
-	if len(accList) == 0 {
+	if len(accinfoList) == 0 {
 		return goError.DoLoginErr
 	}
 
-	// ✅ 1️⃣ 随机打乱
+	// 随机打乱
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(accinfoList), func(i, j int) {
 		accinfoList[i], accinfoList[j] = accinfoList[j], accinfoList[i]
@@ -473,38 +490,60 @@ func (this *AccountServer) DoBatchLogin(req *info.DoBatchLoginReq, rsp *info.Nul
 
 	go func(list []*account.AccountInfo) {
 
-		// 👉 提取账号字符串（修复 bug）
+		// =========================
+		// 1️⃣ 批量更新为登录中
+		// =========================
 		var accNames []string
 		for _, v := range list {
 			accNames = append(accNames, v.Account)
 		}
 
-		// 👉 批量更新状态 = 3（登录中）
 		account.UpAccountInfo(
 			bson.M{"account": bson.M{"$in": accNames}},
 			bson.M{"status": int64(3)},
 		)
 
-		for i, accountInfo := range list {
+		// =========================
+		// 2️⃣ 50并发控制
+		// =========================
+		const maxConcurrent = 50
+		sem := make(chan struct{}, maxConcurrent)
 
-			importJson, err := wxComm.ImportJson(
-				accountInfo.Account,
-				json.RawMessage(accountInfo.Token),
-			)
+		var wg sync.WaitGroup
 
-			if err != nil || !importJson.Ok {
-				account.UpAccountInfo(
-					bson.M{"account": accountInfo.Account},
-					bson.M{"status": int64(4)},
+		for _, accountInfo := range list {
+
+			wg.Add(1)
+			sem <- struct{}{} // 获取一个并发槽
+
+			go func(acc *account.AccountInfo) {
+				defer wg.Done()
+				defer func() { <-sem }() // 释放槽位
+
+				defer func() {
+					if r := recover(); r != nil {
+						fmt.Println("panic:", r)
+					}
+				}()
+
+				importJson, err := wxComm.ImportJson(
+					acc.Account,
+					json.RawMessage(acc.Token),
 				)
-			}
 
-			// ✅ 2️⃣ 每50个暂停20秒
-			if (i+1)%50 == 0 {
-				fmt.Println("已处理:", i+1, "暂停20秒...")
-				time.Sleep(20 * time.Second)
-			}
+				if err != nil || !importJson.Ok {
+					account.UpAccountInfo(
+						bson.M{"account": acc.Account},
+						bson.M{"status": int64(4)},
+					)
+					return
+				}
+
+			}(accountInfo)
 		}
+
+		// 等待全部完成
+		wg.Wait()
 
 	}(accinfoList)
 
