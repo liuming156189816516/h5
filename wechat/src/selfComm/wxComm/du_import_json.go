@@ -3,6 +3,7 @@ package wxComm
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"math/rand"
@@ -12,6 +13,7 @@ import (
 
 type Ant struct {
 	SessionId string      `json:"sessionId"`
+	Channel   string      `json:"channel"`
 	Data      interface{} `json:"data"`
 }
 
@@ -24,9 +26,10 @@ func ImportJson(account string, param interface{}) (*ImportJsonRsp, error) {
 	api := "https://tls.v168.vip/api/login/import-json"
 	headerMap := make(map[string]string)
 	headerMap["Content-Type"] = "application/json"
-
+	channel := beego.AppConfig.String("channel")
 	ant := &Ant{
 		SessionId: GenerateUniqueString(),
+		Channel:   channel,
 		Data:      param,
 	}
 
