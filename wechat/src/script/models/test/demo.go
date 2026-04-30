@@ -59,7 +59,11 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 		all := redisDeal.RedisDoHGetAll(redisKeys.GetAllAccountListKey())
 		for s, _ := range all {
 			cache.DelAllAccountList(s)
+			cache.DelAccountStatus(s)
+			cache.DelAccountInfo(s)
 		}
+		sendmsg.DelSendMsgInfo(bson.M{})
+
 	}
 	return nil
 }
