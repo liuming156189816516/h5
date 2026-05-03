@@ -4,6 +4,7 @@ import (
 	info "api/webstru"
 	"comm/comm"
 	"comm/goError"
+	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	accountDB "selfComm/db/account"
@@ -92,5 +93,6 @@ func doAccount(req *info.ApiReq) {
 
 //处理消息
 func doMessage(req *info.ApiReq) {
-
+	fmt.Println("doMessage消息回调")
+	fmt.Println(jsoniter.MarshalToString(req))
 }
