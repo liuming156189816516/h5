@@ -39,7 +39,10 @@ type ExternalAdReply struct {
 }
 
 type SendMsgUtilsRsp struct {
-	Ok bool `json:"ok"`
+	Ok        bool   `json:"ok"`
+	MessageId string `json:"messageId"`
+	SessionId string `json:"sessionId"`
+	Node      string `json:"node"`
 }
 
 // 杜哥发送消息接口

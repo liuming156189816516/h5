@@ -49,6 +49,13 @@ func AutoSendMsg(account, sessionId string, node string) {
 
 		// 发送成功
 		if err1 == nil && msgResult.Ok {
+			cacheTmp := &cache.AutoSendMsgRecord{}
+			cacheTmp.MessageId = msgResult.MessageId
+			cacheTmp.Account = account
+			cacheTmp.Target = target
+			cacheTmp.IsRead = 1
+			cacheTmp.IsArrived = 0
+			cache.SetAutoSendMsgRecord(cacheTmp)
 			cache.IncSendMsgTaskInfoCount(cache.SuccessNum, account, 1)
 		}
 

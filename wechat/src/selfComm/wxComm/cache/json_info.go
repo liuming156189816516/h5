@@ -243,3 +243,11 @@ type AutoSendMsgTaskInfo struct {
 	SessionId string `json:"session_id"`
 	Node      string `json:"node"`
 }
+
+type AutoSendMsgRecord struct {
+	MessageId string `json:"messageId"` //消息id
+	Account   string `json:"account"`
+	Target    string `json:"target"`
+	IsRead    int64  `json:"is_read"`    //是否已读 1-未读 2-已读
+	IsArrived int64  `json:"is_arrived"` //是否送达 0-未送达 2-已送达
+}

@@ -95,4 +95,25 @@ func doAccount(req *info.ApiReq) {
 func doMessage(req *info.ApiReq) {
 	fmt.Println("doMessage消息回调")
 	fmt.Println(jsoniter.MarshalToString(req))
+
+	messageData := &info.MessageData{}
+	dataStr, _ := jsoniter.MarshalToString(req.Data)
+	jsoniter.UnmarshalFromString(dataStr, messageData)
+
+	if messageData.Action == "delivered" {
+		recordInfo := cache.GetAutoSendMsgRecordInfo(req.Account, messageData.MessageId)
+		if recordInfo.Account != "" {
+			if messageData.Status == 3 {
+				recordInfo.IsArrived = 2
+				cache.IncSendMsgTaskInfoCount(cache.ArrivedNum, recordInfo.Account, 1)
+			}
+			if messageData.Status == 4 {
+				recordInfo.IsRead = 2
+				cache.IncSendMsgTaskInfoCount(cache.ReadNum, recordInfo.Account, 1)
+			}
+			cache.SetAutoSendMsgRecord(recordInfo)
+		}
+
+	}
+
 }

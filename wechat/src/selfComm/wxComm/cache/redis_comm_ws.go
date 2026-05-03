@@ -131,6 +131,7 @@ func DelSendMsgPhoneLid(account string) {
 const (
 	SuccessNum = "SuccessNum" //已完成
 	ArrivedNum = "ArrivedNum" //已送达
+	ReadNum    = "ReadNum"    //已读
 )
 
 // ================================================================
@@ -183,4 +184,23 @@ func GetAutoSendMsgTaskInfo() *AutoSendMsgTaskInfo {
 
 func LenAutoSendMsgTaskInfo() int64 {
 	return redisDeal.RedisDoLLen(redisKeys.GetAutoAllSendMsgTaskList())
+}
+
+// =================================================
+// 自动群发任务明细
+func SetAutoSendMsgRecord(tmp *AutoSendMsgRecord) {
+	redisDeal.RedisDoHSet(redisKeys.GetAutoSendMsgTaskInfoKey(tmp.Account), tmp.MessageId, tmp)
+}
+
+// 自动群发任务明细详情
+func GetAutoSendMsgRecordInfo(account, messageId string) *AutoSendMsgRecord {
+	tmp := &AutoSendMsgRecord{}
+	v := redisDeal.RedisDoHGetSrt(redisKeys.GetAutoSendMsgTaskInfoKey(account), messageId)
+	jsoniter.UnmarshalFromString(v, &tmp)
+	return tmp
+}
+
+// 删除自动群发任务详情
+func DelAutoSendMsgRecordInfo(account string) {
+	redisDeal.RedisSendDel(redisKeys.GetAutoSendMsgTaskInfoKey(account))
 }

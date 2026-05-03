@@ -20,3 +20,13 @@ type AccountData struct {
 	Node      string `json:"node"`
 	Reason    string `json:"reason"` //错误原因
 }
+
+type MessageData struct {
+	Action     string `json:"action"`
+	MessageId  string `json:"messageId"`
+	RemoteJid  string `json:"remoteJid"`
+	PeerDigits string `json:"peerDigits"`
+	Status     int64  `json:"status"` // 3-送达 4-已读
+	SessionId  string `json:"sessionId"`
+	Node       string `json:"node"`
+}
