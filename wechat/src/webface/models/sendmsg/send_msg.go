@@ -101,6 +101,10 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 			"total_sucess": bson.M{
 				"$sum": "$sucess_num",
 			},
+			//送达成功总数
+			"total_arrived": bson.M{
+				"$sum": "$arrived_num",
+			},
 			// 账号数量
 			"account_count": bson.M{
 				"$sum": 1,
@@ -110,11 +114,15 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 
 	sumRet, err1 := mgoDeal.QueryMongoSum(db, tb, sumwhere)
 
-	var totalSucess, accountCount int64
+	var totalSucess, totalArrived, accountCount int64
 
 	if err1 == nil {
 		if p, ok := sumRet["total_sucess"]; ok {
 			totalSucess = utils.GetInt64(p)
+		}
+
+		if p, ok := sumRet["total_arrived"]; ok {
+			totalArrived = utils.GetInt64(p)
 		}
 
 		if p, ok := sumRet["account_count"]; ok {
@@ -124,6 +132,7 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 
 	if totalSucess > 0 && accountCount > 0 {
 		rsp.SuccessCount = totalSucess
+		rsp.ArrivedCount = totalArrived
 		rsp.Average = totalSucess / accountCount
 	}
 

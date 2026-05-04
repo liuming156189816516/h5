@@ -14,6 +14,7 @@ type GetSendMsgInfoListRsp struct {
 	Total        int64                     `json:"total"`
 	List         []*GetSendMsgInfoListInfo `json:"list"`
 	SuccessCount int64                     `json:"success_count"` //发送完成总数
+	ArrivedCount int64                     `json:"arrived_count"` //送达完成总数
 	Average      int64                     `json:"average"`       //平均发送数
 }
 type GetSendMsgInfoListInfo struct {
