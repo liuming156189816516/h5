@@ -16,6 +16,7 @@ type SendMsgInfo struct {
 	AccountStatus int64         `json:"account_status" bson:"account_status"` //账号状态 1-离线 2-在线
 	SucessNum     int64         `json:"sucess_num" bson:"sucess_num"`         //发送数量
 	ArrivedNum    int64         `json:"arrived_num" bson:"arrived_num"`       //已送达
+	ReadNum       int64         `json:"read_num" bson:"read_num"`             //已读
 	Reason        string        `json:"reason" bson:"reason"`                 //原因
 	Creator       string        `json:"creator" bson:"creator"`               //创建者
 	Itime         int64         `json:"itime" bson:"itime"`                   //创建时间

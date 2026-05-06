@@ -11,12 +11,14 @@ type GetSendMsgInfoListReq struct {
 }
 
 type GetSendMsgInfoListRsp struct {
-	Total          int64                     `json:"total"`
-	List           []*GetSendMsgInfoListInfo `json:"list"`
-	SuccessCount   int64                     `json:"success_count"`   //发送完成总数
-	ArrivedCount   int64                     `json:"arrived_count"`   //送达完成总数
-	Average        int64                     `json:"average"`         //平均发送数
-	ArrivedAverage int64                     `json:"arrived_average"` //平均送达数
+	Total        int64                     `json:"total"`
+	List         []*GetSendMsgInfoListInfo `json:"list"`
+	SuccessCount int64                     `json:"success_count"` //发送完成总数
+	ArrivedCount int64                     `json:"arrived_count"` //送达完成总数
+	ReadCount    int64                     `json:"read_count"`    //已读完成总数
+	Average      int64                     `json:"average"`       //平均发送数
+	ArrivedRate  int64                     `json:"arrived_rate"`  //送达率
+	ReadRate     int64                     `json:"read_rate"`     //已读率
 }
 type GetSendMsgInfoListInfo struct {
 	Id            string `json:"id"`
@@ -24,6 +26,7 @@ type GetSendMsgInfoListInfo struct {
 	AccountStatus int64  `json:"account_status" ` //账号状态 1-离线 2-在线
 	SucessNum     int64  `json:"sucess_num"`      //已完成数量
 	ArrivedNum    int64  `json:"arrived_num"`     //已送达
+	ReadNum       int64  `json:"read_num"`        //已读
 	Reason        string `json:"reason"`          //原因
 	Itime         int64  `json:"itime"`           //创建时间
 	Ptime         int64  `json:"ptime"`           //更新时间

@@ -73,6 +73,9 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 		if p, ok := data["arrived_num"]; ok {
 			tmp.ArrivedNum = utils.GetInt64(p)
 		}
+		if p, ok := data["read_num"]; ok {
+			tmp.ReadNum = utils.GetInt64(p)
+		}
 		if p, ok := data["reason"]; ok {
 			tmp.Reason = utils.GetString(p)
 		}
@@ -105,6 +108,10 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 			"total_arrived": bson.M{
 				"$sum": "$arrived_num",
 			},
+			//已读成功总数
+			"total_read": bson.M{
+				"$sum": "$read_num",
+			},
 			// 账号数量
 			"account_count": bson.M{
 				"$sum": 1,
@@ -114,7 +121,7 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 
 	sumRet, err1 := mgoDeal.QueryMongoSum(db, tb, sumwhere)
 
-	var totalSucess, totalArrived, accountCount int64
+	var totalSucess, totalArrived, totalRead, accountCount int64
 
 	if err1 == nil {
 		if p, ok := sumRet["total_sucess"]; ok {
@@ -125,6 +132,10 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 			totalArrived = utils.GetInt64(p)
 		}
 
+		if p, ok := sumRet["total_read"]; ok {
+			totalRead = utils.GetInt64(p)
+		}
+
 		if p, ok := sumRet["account_count"]; ok {
 			accountCount = utils.GetInt64(p)
 		}
@@ -133,8 +144,10 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 	if totalSucess > 0 && accountCount > 0 {
 		rsp.SuccessCount = totalSucess
 		rsp.ArrivedCount = totalArrived
+		rsp.ReadCount = totalRead
 		rsp.Average = totalSucess / accountCount
-		rsp.ArrivedAverage = totalArrived / accountCount
+		rsp.ArrivedRate = totalArrived / totalSucess
+		rsp.ReadRate = totalRead / totalSucess
 	}
 
 	go func() {
@@ -155,6 +168,9 @@ func (this *SendMsgServer) GetSendMsgInfoList(req *info.GetSendMsgInfoListReq, r
 
 			count10 := cache.GetSendMsgTaskInfoCount(cache.ArrivedNum, msgInfo.Account)
 			up["arrived_num"] = count10
+
+			readCount := cache.GetSendMsgTaskInfoCount(cache.ReadNum, msgInfo.Account)
+			up["read_num"] = readCount
 
 			if len(up) > 0 {
 				sendmsg.UpSendMsgInfo(bson.M{"_id": msgInfo.Id}, up)
