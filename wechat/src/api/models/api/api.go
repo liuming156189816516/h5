@@ -4,7 +4,6 @@ import (
 	info "api/webstru"
 	"comm/comm"
 	"comm/goError"
-	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
 	accountDB "selfComm/db/account"
@@ -50,7 +49,7 @@ func doAccount(req *info.ApiReq) {
 	//账号登陆成功
 	if accountData.Action == "login" {
 
-		logs.Info("login account:", req.Account, dataStr)
+		//logs.Info("login account:", req.Account, dataStr)
 
 		cache.SetAccountStatus(req.Account, 2)
 		tmp := &accountDB.AccountInfo{}
