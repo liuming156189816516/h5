@@ -82,8 +82,7 @@ func SendMsgUtils(sessionId, target string, material cache.Material, node string
 		},
 		"inviteLinkGroupTypeV2": "DEFAULT",
 	}
-	paramStr, _ := jsoniter.MarshalToString(param)
-	logs.Info("SendMsgUtils node:" + node + " param: " + paramStr)
+	logs.Info("SendMsgUtils target:" + target + " sessionId:" + sessionId + " node:" + node)
 	rsp := wxHttp.ZHttp(wxHttp.ZHttpReqParam{
 		Url:     api,
 		Headers: headerMap,
