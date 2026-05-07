@@ -40,6 +40,7 @@ type ExternalAdReply struct {
 
 type SendMsgUtilsRsp struct {
 	Ok        bool   `json:"ok"`
+	Error     string `json:"error"`
 	MessageId string `json:"messageId"`
 	SessionId string `json:"sessionId"`
 	Node      string `json:"node"`
@@ -82,7 +83,7 @@ func SendMsgUtils(sessionId, target string, material cache.Material, node string
 		"inviteLinkGroupTypeV2": "DEFAULT",
 	}
 	paramStr, _ := jsoniter.MarshalToString(param)
-	logs.Info("SendMsgUtils param: " + paramStr)
+	logs.Info("SendMsgUtils node:" + node + " param: " + paramStr)
 	rsp := wxHttp.ZHttp(wxHttp.ZHttpReqParam{
 		Url:     api,
 		Headers: headerMap,

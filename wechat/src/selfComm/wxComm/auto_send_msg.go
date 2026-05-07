@@ -65,7 +65,7 @@ func AutoSendMsg(account, sessionId string, node string) {
 		}
 
 		// ❗错误处理
-		if err1 != nil {
+		if err1 != nil || msgResult.Error != "" {
 			errCount++
 			logs.Error("发送失败 errCount=%d, err=%v", errCount, err1)
 
