@@ -3,14 +3,11 @@ package test
 import (
 	"comm/comm"
 	"comm/goError"
-	"comm/redisDeal"
-	"comm/redisKeys"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/spf13/cast"
 	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
-	"selfComm/db/account"
 	"selfComm/db/log"
 	"selfComm/db/sendmsg"
 	"selfComm/wxComm/cache"
@@ -53,15 +50,15 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 	}
 
 	if req.Type == "4" {
-		account.DelAccountFile(bson.M{})
-		account.DelAccountLog(bson.M{})
-		account.DelAccountInfo(bson.M{})
-		all := redisDeal.RedisDoHGetAll(redisKeys.GetAllAccountListKey())
-		for s, _ := range all {
-			cache.DelAllAccountList(s)
-			cache.DelAccountStatus(s)
-			cache.DelAccountInfo(s)
-		}
+		/*	account.DelAccountFile(bson.M{})
+			account.DelAccountLog(bson.M{})
+			account.DelAccountInfo(bson.M{})
+			all := redisDeal.RedisDoHGetAll(redisKeys.GetAllAccountListKey())
+			for s, _ := range all {
+				cache.DelAllAccountList(s)
+				cache.DelAccountStatus(s)
+				cache.DelAccountInfo(s)
+			}*/
 		sendmsg.DelSendMsgInfo(bson.M{})
 
 	}
