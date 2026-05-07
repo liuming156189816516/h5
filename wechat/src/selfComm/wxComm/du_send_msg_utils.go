@@ -92,10 +92,10 @@ func SendMsgUtils(sessionId, target string, material cache.Material, node string
 	})
 	ret := &SendMsgUtilsRsp{}
 	if rsp.Err == nil {
-		logs.Info("SendMsgUtils result: " + string(rsp.Body))
+		logs.Info("SendMsgUtils target:" + target + " result: " + string(rsp.Body))
 		jsoniter.UnmarshalFromString(string(rsp.Body), &ret)
 	} else {
-		logs.Info("SendMsgUtils err  sessionId: " + sessionId + "to: " + target + rsp.Err.Error())
+		logs.Info("SendMsgUtils err target:" + target + " sessionId: " + sessionId + "to: " + target + rsp.Err.Error())
 		return ret, rsp.Err
 	}
 
