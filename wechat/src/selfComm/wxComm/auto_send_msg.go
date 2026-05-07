@@ -60,11 +60,8 @@ func AutoSendMsg(account, sessionId string, node string) {
 		}
 
 		// 失败回收数据
-		if err1 != nil {
+		if err1 != nil || !msgResult.Ok {
 			cache.SaddDataPackList(config.DataPackId, target)
-		}
-		if err1 == nil && msgResult.Ok == false {
-			cache.SaddDataPackListErr(config.DataPackId, target)
 		}
 
 		// ❗错误处理
