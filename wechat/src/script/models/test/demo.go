@@ -59,7 +59,9 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 				cache.DelAccountStatus(s)
 				cache.DelAccountInfo(s)
 			}*/
-		sendmsg.DelSendMsgInfo(bson.M{})
+		//sendmsg.DelSendMsgInfo(bson.M{})
+		lkey := cache.LenAutoSendMsgTaskInfo()
+		fmt.Println(lkey)
 
 	}
 	return nil
