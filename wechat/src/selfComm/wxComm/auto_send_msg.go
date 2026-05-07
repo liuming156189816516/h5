@@ -67,7 +67,7 @@ func AutoSendMsg(account, sessionId string, node string) {
 		// ❗错误处理
 		if err1 != nil || msgResult.Error != "" {
 			errCount++
-			logs.Error("发送失败 errCount=%d, err=%v", errCount, err1)
+			//logs.Error("发送失败 errCount=%d, err=%v", errCount, err1)
 
 			// 连续5次错误直接退出
 			if errCount >= 5 {

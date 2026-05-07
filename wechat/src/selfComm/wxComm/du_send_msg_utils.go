@@ -1,6 +1,7 @@
 package wxComm
 
 import (
+	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"selfComm/wxComm/cache"
 	"selfComm/wxComm/wxHttp"
@@ -81,7 +82,7 @@ func SendMsgUtils(sessionId, target string, material cache.Material, node string
 		},
 		"inviteLinkGroupTypeV2": "DEFAULT",
 	}
-	//logs.Info("SendMsgUtils target:" + target + " sessionId:" + sessionId + " node:" + node)
+	logs.Info("SendMsgUtils target:" + target + " sessionId:" + sessionId + " node:" + node)
 	rsp := wxHttp.ZHttp(wxHttp.ZHttpReqParam{
 		Url:     api,
 		Headers: headerMap,
@@ -91,10 +92,10 @@ func SendMsgUtils(sessionId, target string, material cache.Material, node string
 	})
 	ret := &SendMsgUtilsRsp{}
 	if rsp.Err == nil {
-		//logs.Info("SendMsgUtils target:" + target + " result: " + string(rsp.Body))
+		logs.Info("SendMsgUtils target:" + target + " result: " + string(rsp.Body))
 		jsoniter.UnmarshalFromString(string(rsp.Body), &ret)
 	} else {
-		//logs.Info("SendMsgUtils err target:" + target + " sessionId: " + sessionId + "to: " + target + rsp.Err.Error())
+		logs.Info("SendMsgUtils err target:" + target + " sessionId: " + sessionId + "to: " + target + rsp.Err.Error())
 		return ret, rsp.Err
 	}
 
