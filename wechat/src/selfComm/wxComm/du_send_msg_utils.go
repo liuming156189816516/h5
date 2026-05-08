@@ -56,7 +56,7 @@ func SendMsgUtils(sessionId, target string, material cache.Material, node string
 	jsoniter.UnmarshalFromString(material.Content, &advertise)
 	image, _, _ := GetBase64ByUrl(advertise.Img)
 	param := map[string]interface{}{
-		"to":          target + "@s.whatsapp.net",
+		"to":          target,
 		"text":        advertise.Remark,
 		"previewType": "NONE",
 		"contextInfo": map[string]interface{}{
