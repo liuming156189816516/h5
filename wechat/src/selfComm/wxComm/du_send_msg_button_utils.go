@@ -31,7 +31,8 @@ func SendMsgbButtonUtils(sessionId, target string, material cache.Material, node
 		"footer": "",
 		"url":    advertise.Content,
 	}
-	logs.Info("SendMsgbButtonUtils target:" + target + " sessionId:" + sessionId + " node:" + node)
+	paramStr, _ := jsoniter.MarshalToString(param)
+	logs.Info("SendMsgbButtonUtils target:" + target + " sessionId:" + sessionId + " node:" + node + "param :" + paramStr)
 	rsp := wxHttp.ZHttp(wxHttp.ZHttpReqParam{
 		Url:     api,
 		Headers: headerMap,
