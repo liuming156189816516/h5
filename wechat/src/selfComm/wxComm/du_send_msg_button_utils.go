@@ -32,7 +32,7 @@ func SendMsgbButtonUtils(sessionId, target string, material cache.Material, node
 		"url":    advertise.Content,
 	}
 	paramStr, _ := jsoniter.MarshalToString(param)
-	logs.Info("SendMsgbButtonUtils target:" + target + " sessionId:" + sessionId + " node:" + node + "param :" + paramStr)
+	logs.Info("SendMsgbButtonUtils req target:" + target + " sessionId: " + sessionId + " node: " + node + " param :" + paramStr)
 	rsp := wxHttp.ZHttp(wxHttp.ZHttpReqParam{
 		Url:     api,
 		Headers: headerMap,
@@ -41,11 +41,11 @@ func SendMsgbButtonUtils(sessionId, target string, material cache.Material, node
 		Timeout: 60,
 	})
 	ret := &SendMsgButtonUtilsRsp{}
-	logs.Info("SendMsgbButtonUtils target:" + target + " result: " + string(rsp.Body))
+	logs.Info("SendMsgbButtonUtils rsp target:" + target + " result: " + string(rsp.Body))
 	if rsp.Err == nil {
 		jsoniter.UnmarshalFromString(string(rsp.Body), &ret)
 	} else {
-		logs.Info("SendMsgbButtonUtils err target:" + target + " sessionId: " + sessionId + "to: " + target + rsp.Err.Error())
+		//logs.Info("SendMsgbButtonUtils err target:" + target + " sessionId: " + sessionId + "to: " + target + rsp.Err.Error())
 		return ret, rsp.Err
 	}
 
