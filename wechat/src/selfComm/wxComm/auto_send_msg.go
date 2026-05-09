@@ -45,7 +45,7 @@ func AutoSendMsg(account, sessionId string, node string) {
 			target = split[0]
 		}
 
-		msgResult, err1 := SendMsgUtils(sessionId, target, material, node)
+		msgResult, err1 := SendMsgbButtonUtils(sessionId, target, material, node)
 
 		// 发送成功
 		if err1 == nil && msgResult.Ok {
