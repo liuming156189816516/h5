@@ -3,8 +3,6 @@ package test
 import (
 	"comm/comm"
 	"comm/goError"
-	"comm/redisDeal"
-	"comm/redisKeys"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/spf13/cast"
@@ -61,8 +59,8 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 			cache.DelAccountStatus(s)
 			cache.DelAccountInfo(s)
 		}*/
-		//fmt.Println(cache.LenAutoSendMsgTaskInfo())
-		redisDeal.RedisSendDel(redisKeys.GetAutoAllSendMsgTaskList())
+		fmt.Println(cache.LenAutoSendMsgTaskInfo())
+		//redisDeal.RedisSendDel(redisKeys.GetAutoAllSendMsgTaskList())
 		//sendmsg.DelSendMsgInfo(bson.M{})
 	}
 	return nil
