@@ -10,7 +10,7 @@ func TaskRun() {
 	go func() {
 		//自动群发任务
 		time.Sleep(2 * time.Second)
-		var ticker = time.NewTicker(10 * time.Second)
+		var ticker = time.NewTicker(2 * time.Second)
 		for {
 			select {
 			case t := <-ticker.C:
@@ -38,7 +38,7 @@ func doAutoSendMsg(t time.Time, lock string) {
 		return
 	}
 
-	num := 50
+	num := 200
 	for i := 0; i < num; i++ {
 		taskInfo := cache.GetAutoSendMsgTaskInfo()
 		if taskInfo.Account == "" {
