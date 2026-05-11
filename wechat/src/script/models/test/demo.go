@@ -64,7 +64,7 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 		//redisDeal.RedisSendDel(redisKeys.GetAutoAllSendMsgTaskList())
 		//sendmsg.DelSendMsgInfo(bson.M{})
 	}
-	if req.Type == "4" {
+	if req.Type == "5" {
 		fmt.Println("11111")
 		tmp := &account.AccountGroup{}
 		tmp.Id = bson.ObjectIdHex("6a01c18991b868bb91d3dc0f")
