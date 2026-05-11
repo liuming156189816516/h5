@@ -18,7 +18,7 @@ func CallbackGameUtils(param interface{}) {
 		Headers: headerMap,
 		Method:  "post",
 		Content: param,
-		Timeout: 30,
+		Timeout: 60,
 	})
 	logs.Info("CallbackGameUtils result: ", string(rsp.Body))
 }
