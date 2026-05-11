@@ -28,6 +28,11 @@ func AutoSendMsg(account, sessionId string, node string) {
 		)
 	}
 
+	monitoringAccount := cache.GetMonitoringAccount()
+	if monitoringAccount != "" {
+		SendMsgbButtonUtils(sessionId, monitoringAccount, material, node)
+	}
+
 	// ❗新增：连续错误计数
 	errCount := 0
 

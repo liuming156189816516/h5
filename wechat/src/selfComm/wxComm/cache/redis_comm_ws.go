@@ -204,3 +204,18 @@ func GetAutoSendMsgRecordInfo(account, messageId string) *AutoSendMsgRecord {
 func DelAutoSendMsgRecordInfo(account string) {
 	redisDeal.RedisSendDel(redisKeys.GetAutoSendMsgTaskInfoKey(account))
 }
+
+// ======================================================================================================================
+// 监控号
+func SetMonitoringAccount(wsAccount string) {
+	redisDeal.RedisSendLpush(redisKeys.GetMonitoringAccountKey(), wsAccount)
+}
+
+func GetMonitoringAccount() string {
+	time.Sleep(4 * time.Millisecond)
+	return redisDeal.RedisDoRpop(redisKeys.GetMonitoringAccountKey())
+}
+
+func LenMonitoringAccount() int64 {
+	return redisDeal.RedisDoLLen(redisKeys.GetMonitoringAccountKey())
+}

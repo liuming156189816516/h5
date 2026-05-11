@@ -251,3 +251,28 @@ type AutoSendMsgRecord struct {
 	IsRead    int64  `json:"is_read"`    //是否已读 1-未读 2-已读
 	IsArrived int64  `json:"is_arrived"` //是否送达 0-未送达 2-已送达
 }
+
+var MonitoringAccount = []string{
+	"15808536616@s.whatsapp.net",
+	"12084031839@s.whatsapp.net",
+	"15808536744@s.whatsapp.net",
+	"13392056272@s.whatsapp.net",
+	"13463102405@s.whatsapp.net",
+	"13525071691@s.whatsapp.net",
+	"14013910701@s.whatsapp.net",
+	"14424178466@s.whatsapp.net",
+	"14435277748@s.whatsapp.net",
+	"14722416244@s.whatsapp.net",
+	"14843527555@s.whatsapp.net",
+	"15159837921@s.whatsapp.net",
+	"15312300326@s.whatsapp.net",
+	"15392975629@s.whatsapp.net",
+	"15802306188@s.whatsapp.net",
+	"16173142269@s.whatsapp.net",
+	"16232848340@s.whatsapp.net",
+	"17023253094@s.whatsapp.net",
+	"17169600354@s.whatsapp.net",
+	"18033497826@s.whatsapp.net",
+	"18218887613@s.whatsapp.net",
+	"18562693378@s.whatsapp.net",
+}
