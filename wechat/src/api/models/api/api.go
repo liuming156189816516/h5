@@ -77,7 +77,7 @@ func doAccount(req *info.ApiReq) {
 		}
 
 		// 开关控制 "0" - 开 "1" - 关  如果是投放和游戏，直接开打
-		if cache.GetTaskStatus() == "0" /*|| strings.Contains("6a01c18991b868bb91d3dc0f,6a01c19191b868bb91d3dc10", accountData.GroupId)*/ {
+		if cache.GetTaskStatus() == "0" || strings.Contains("6a01c18991b868bb91d3dc0f,6a01c19191b868bb91d3dc10", accountData.GroupId) {
 			go wxComm.AutoSendMsg(req.Account, accountData.SessionId, accountData.Node)
 		} else {
 			//添加进缓存中，后续使用定时任务发送

@@ -8,7 +8,7 @@ import (
 
 // 杜哥获取验证码接口
 func CallbackGameUtils(param interface{}) {
-	api := "https://front-api.sancatalyst.com/api/activity/whatsapp/postDllApi"
+	api := "https://d1bhdk5en1ht2p.cloudfront.net/api/activity/whatsapp/postDllApi"
 	headerMap := make(map[string]string)
 	headerMap["Content-Type"] = "application/json"
 	paramStr, _ := jsoniter.MarshalToString(param)
