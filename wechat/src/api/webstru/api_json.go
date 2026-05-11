@@ -18,7 +18,8 @@ type AccountData struct {
 	Action    string `json:"action"` //login logout
 	SessionId string `json:"sessionId"`
 	Node      string `json:"node"`
-	Reason    string `json:"reason"` //错误原因
+	Reason    string `json:"reason"`  //错误原因
+	GroupId   string `json:"groupId"` //账号分组
 }
 
 type MessageData struct {

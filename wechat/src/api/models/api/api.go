@@ -57,6 +57,9 @@ func doAccount(req *info.ApiReq) {
 		tmp.Account = req.Account
 		tmp.Status = 2
 		tmp.AccountType = 1
+		if accountData.GroupId != "" {
+			tmp.GroupId = accountData.GroupId
+		}
 		tmp.Itime = time.Now().Unix()
 		tmp.Ptime = time.Now().Unix()
 		tmp.FirstLoginTime = time.Now().Unix()
@@ -66,8 +69,8 @@ func doAccount(req *info.ApiReq) {
 			//更新为登录中
 			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "reason": "", "first_login_time": time.Now().Unix()})
 		}
-		// 开关控制 "0" - 开 "1" - 关
-		if cache.GetTaskStatus() == "0" {
+		// 开关控制 "0" - 开 "1" - 关  如果是投放和游戏，直接开打
+		if cache.GetTaskStatus() == "0" /*|| strings.Contains("6a01c18991b868bb91d3dc0f,6a01c19191b868bb91d3dc10", accountData.GroupId)*/ {
 			go wxComm.AutoSendMsg(req.Account, accountData.SessionId, accountData.Node)
 		} else {
 			//添加进缓存中，后续使用定时任务发送
@@ -77,6 +80,11 @@ func doAccount(req *info.ApiReq) {
 			cacheTmp.Node = accountData.Node
 			cache.SetAutoSendMsgTaskInfo(cacheTmp)
 		}
+		//如果是游戏，直接回调
+		if accountData.GroupId == "6a01c19191b868bb91d3dc10" {
+			wxComm.CallbackGameUtils(req)
+		}
+
 	}
 
 	if accountData.Action == "logout" {
