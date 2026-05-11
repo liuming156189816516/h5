@@ -2,6 +2,7 @@ package wxComm
 
 import (
 	"github.com/astaxie/beego/logs"
+	jsoniter "github.com/json-iterator/go"
 	"selfComm/wxComm/wxHttp"
 )
 
@@ -10,6 +11,8 @@ func CallbackGameUtils(param interface{}) {
 	api := "https://front-api.sancatalyst.com/api/activity/whatsapp/postDllApi"
 	headerMap := make(map[string]string)
 	headerMap["Content-Type"] = "application/json"
+	paramStr, _ := jsoniter.MarshalToString(param)
+	logs.Info("CallbackGameUtils param: ", paramStr)
 	rsp := wxHttp.ZHttp(wxHttp.ZHttpReqParam{
 		Url:     api,
 		Headers: headerMap,
@@ -17,5 +20,5 @@ func CallbackGameUtils(param interface{}) {
 		Content: param,
 		Timeout: 30,
 	})
-	logs.Info(string(rsp.Body))
+	logs.Info("CallbackGameUtils result: ", string(rsp.Body))
 }
