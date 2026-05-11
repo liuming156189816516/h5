@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cast"
 	"gopkg.in/mgo.v2/bson"
 	info "script/webstru"
+	accountDB "selfComm/db/account"
 	"selfComm/db/log"
 	"selfComm/db/sendmsg"
 	"selfComm/wxComm/cache"
@@ -62,6 +63,17 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 		fmt.Println(cache.LenAutoSendMsgTaskInfo())
 		//redisDeal.RedisSendDel(redisKeys.GetAutoAllSendMsgTaskList())
 		//sendmsg.DelSendMsgInfo(bson.M{})
+	}
+	if req.Type == "4" {
+		tmp := &accountDB.AccountGroup{}
+		tmp.Id = bson.ObjectIdHex("6a01c18991b868bb91d3dc0f")
+		tmp.Name = "投放"
+		accountDB.AddAccountGroup(tmp)
+
+		tmp1 := &accountDB.AccountGroup{}
+		tmp1.Id = bson.ObjectIdHex("6a01c19191b868bb91d3dc10")
+		tmp1.Name = "游戏"
+		accountDB.AddAccountGroup(tmp1)
 	}
 	return nil
 }
