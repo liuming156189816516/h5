@@ -307,7 +307,7 @@ func (this *AccountController) DoBathDelAccountFile() {
 
 func (this *AccountController) CheckAccountFile() {
 	f, h, err := this.GetFile("file")
-	req := &info.NullReq{}
+	req := &info.CheckAccountFileReq{}
 
 	if err != nil {
 		this.JsonResult(goError.NewGoError(400, "未提交文件"), nil)
@@ -355,74 +355,28 @@ func (this *AccountController) CheckAccountFile() {
 		this.JsonResult(goError.NewGoError(500, "文件保存失败"), nil)
 		return
 	}
-
-	member := &account.AccountServer{
-		Sess: this.Sess,
-	}
-	rsp := &info.CheckAccountFileRsp{}
-	rsp.Name = h.Filename
-	rsp.FileId = fileId
-	// ✅ 👉 直接调用你的公共方法
-	accountJsons, err := wxComm.DoJsonUtils(saveDir)
-	if err != nil {
-		this.JsonResult(goError.NewGoError(500, err.Error()), nil)
-		return
-	}
-
-	if len(accountJsons) <= 0 {
-		this.JsonResult(goError.NewGoError(500, "上传的zip为空"), nil)
-		return
-	}
-
-	erro := member.CheckAccountFile(accountJsons, req, rsp)
-	if erro != nil {
-		this.JsonResult(erro, nil)
-		return
-	}
-	this.JsonResult(goError.SuccRsp, rsp)
-}
-
-//添加账号
-func (this *AccountController) AddAccount() {
-	req := &info.AddAccountReq{}
-	if len(this.Ctx.Input.RequestBody) != 0 {
-		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
+	rsp := &info.NullRsp{}
+	req.FileId = fileId
+	req.Name = h.Filename
+	go func(param *info.CheckAccountFileReq, saveDir, deleteDir string) {
+		// ✅ 👉 直接调用你的公共方法
+		accountJsons, err := wxComm.DoJsonUtils(saveDir)
+		defer os.RemoveAll(deleteDir)
 		if err != nil {
-			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+			param.Remark = "解压zip异常"
 			return
 		}
-	}
-	member := &account.AccountServer{
-		Sess: this.Sess,
-	}
-	rsp := &info.AddAccountRsp{}
-	erro := member.AddAccount(req, rsp)
-	if erro != nil {
-		this.JsonResult(erro, nil)
-		return
-	}
-	this.JsonResult(goError.SuccRsp, rsp)
-}
 
-//检查上传状态
-func (this *AccountController) GetAccountSchedule() {
-	req := &info.GetAccountScheduleReq{}
-	if len(this.Ctx.Input.RequestBody) != 0 {
-		err := jsoniter.Unmarshal(this.Ctx.Input.RequestBody, &req)
-		if err != nil {
-			this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
+		if len(accountJsons) <= 0 {
+			param.Remark = "zip为空"
 			return
 		}
-	}
-	member := &account.AccountServer{
-		Sess: this.Sess,
-	}
-	rsp := &info.GetAccountScheduleRsp{}
-	erro := member.GetAccountSchedule(req, rsp)
-	if erro != nil {
-		this.JsonResult(erro, nil)
-		return
-	}
+		member := &account.AccountServer{
+			Sess: this.Sess,
+		}
+		member.CheckAccountFile(accountJsons, param)
+	}(req, saveDir, tmpPath)
+
 	this.JsonResult(goError.SuccRsp, rsp)
 }
 

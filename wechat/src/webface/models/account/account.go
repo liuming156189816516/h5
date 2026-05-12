@@ -613,30 +613,8 @@ func (this *AccountServer) DoBathDelAccountFile(req *info.DoBathDelAccountFileRe
 }
 
 // 检查文件
-func (this *AccountServer) CheckAccountFile(accountJsons []wxComm.AccountJson, req *info.NullReq, rsp *info.CheckAccountFileRsp) *goError.ErrRsp {
-	failNumber := 0
-	successList := []string{}
-	successNumber := 0
-	for _, ipStr := range accountJsons {
-		toString, _ := jsoniter.MarshalToString(ipStr)
-		successNumber++
-		successList = append(successList, toString)
-	}
-	fileUrl := ""
-	rsp.Url = fileUrl
-	rsp.FailNumber = failNumber
-	rsp.SuccessNumber = successNumber
-	rsp.SuccessList = successList
-	return nil
-}
-
-// 添加账号
-func (this *AccountServer) AddAccount(req *info.AddAccountReq, rsp *info.AddAccountRsp) *goError.ErrRsp {
+func (this *AccountServer) CheckAccountFile(accountJsons []wxComm.AccountJson, req *info.CheckAccountFileReq) *goError.ErrRsp {
 	uid := this.Sess.Uid
-	if req.FileId == "" {
-		return goError.GLOBAL_SYSTEMERROR
-	}
-
 	tmp1 := &account.AccountFile{}
 	tmp1.Id = bson.ObjectIdHex(req.FileId)
 	tmp1.Name = req.Name
@@ -644,19 +622,15 @@ func (this *AccountServer) AddAccount(req *info.AddAccountReq, rsp *info.AddAcco
 	tmp1.Remark = req.Remark
 	tmp1.Status = 1
 	account.AddAccountFile(tmp1)
-	rsp.Id = tmp1.Id.Hex()
 
 	go func(uid, fileId string, accountType int64) {
 		successNumber := 0
 		failNumber := 0
 		logList := make([]interface{}, 0)
 		accList := make([]interface{}, 0)
-		for _, accountStr := range req.SuccessList {
-			accountJson := wxComm.AccountJson{}
-			jsoniter.UnmarshalFromString(accountStr, &accountJson)
+		for _, accountJson := range accountJsons {
 			acc := accountJson.Phone
 			token, _ := jsoniter.MarshalToString(accountJson.Token)
-
 			tmp2 := &account.AccountLog{}
 			tmp2.Id = bson.NewObjectId()
 			tmp2.FileId = fileId
@@ -698,17 +672,7 @@ func (this *AccountServer) AddAccount(req *info.AddAccountReq, rsp *info.AddAcco
 		go account.AddBatchAccountLog(logList)
 		account.UpAccountFile(bson.M{"_id": bson.ObjectIdHex(fileId)}, bson.M{"status": int64(2), "success_num": successNumber, "fail_num": failNumber})
 	}(uid, tmp1.Id.Hex(), req.AccountType)
-	return nil
-}
 
-// 获取上传结果
-func (this *AccountServer) GetAccountSchedule(req *info.GetAccountScheduleReq, rsp *info.GetAccountScheduleRsp) *goError.ErrRsp {
-	if req.Id != "" {
-		fileInfo := account.GetByIdAccountFile(req.Id)
-		rsp.UpStatus = fileInfo.Status
-		rsp.Success = fileInfo.SuccessNum
-		rsp.Fail = fileInfo.FailNum
-	}
 	return nil
 }
 

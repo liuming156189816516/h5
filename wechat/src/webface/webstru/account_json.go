@@ -133,25 +133,14 @@ type UpAccount struct {
 }
 
 type CheckAccountFileRsp struct {
-	FileId        string   `json:"file_id"`        //导入文件Id
-	Name          string   `json:"name"`           //文件名称
-	FailNumber    int      `json:"fail_number"`    //失败数量
-	Url           string   `json:"url"`            //错误文件地址
-	SuccessList   []string `json:"success_list"`   //成功集合
-	SuccessNumber int      `json:"success_number"` //成功数量
 }
 
-type AddAccountReq struct {
-	FileId      string   `json:"file_id"` //导入文件Id
-	SuccessList []string `json:"success_list"`
-	Name        string   `json:"name"`         //文件名称
-	AccountType int64    `json:"account_type"` //账号分类 1-个人号 2-商业号
-	GroupId     string   `json:"group_id"`     //分组id
-	Remark      string   `json:"remark"`       //备注
-}
-
-type AddAccountRsp struct {
-	Id string `json:"id"` //文件id
+type CheckAccountFileReq struct {
+	FileId      string `json:"file_id"`      //导入文件Id
+	Name        string `json:"name"`         //文件名称
+	AccountType int64  `json:"account_type"` //账号分类 1-个人号 2-商业号
+	GroupId     string `json:"group_id"`     //分组id
+	Remark      string `json:"remark"`       //备注
 }
 
 type GetAccountScheduleReq struct {
