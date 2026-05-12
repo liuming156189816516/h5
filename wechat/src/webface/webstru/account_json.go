@@ -136,11 +136,11 @@ type CheckAccountFileRsp struct {
 }
 
 type CheckAccountFileReq struct {
-	FileId      string `json:"file_id"`      //导入文件Id
-	Name        string `json:"name"`         //文件名称
-	AccountType int64  `json:"account_type"` //账号分类 1-个人号 2-商业号
-	GroupId     string `json:"group_id"`     //分组id
-	Remark      string `json:"remark"`       //备注
+	FileId      string `form:"file_id" json:"file_id"`           //导入文件Id
+	Name        string `form:"name" json:"name"`                 //文件名称
+	AccountType int64  `form:"account_type" json:"account_type"` //账号分类 1-个人号 2-商业号
+	GroupId     string `form:"group_id" json:"group_id"`         //分组id
+	Remark      string `form:"remark" json:"remark"`             //备注
 }
 
 type GetAccountScheduleReq struct {
