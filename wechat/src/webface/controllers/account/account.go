@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	accountDB "selfComm/db/account"
 	"selfComm/wxComm"
 	"strings"
 	"webface/controllers"
@@ -358,6 +359,15 @@ func (this *AccountController) CheckAccountFile() {
 	rsp := &info.NullRsp{}
 	req.FileId = fileId
 	req.Name = h.Filename
+
+	tmp1 := &accountDB.AccountFile{}
+	tmp1.Id = bson.ObjectIdHex(req.FileId)
+	tmp1.Name = req.Name
+	tmp1.AccountType = req.AccountType
+	tmp1.Remark = req.Remark
+	tmp1.Status = 1
+	accountDB.AddAccountFile(tmp1)
+
 	go func(param *info.CheckAccountFileReq, saveDir, deleteDir string) {
 		// ✅ 👉 直接调用你的公共方法
 		accountJsons, err := wxComm.DoJsonUtils(saveDir)

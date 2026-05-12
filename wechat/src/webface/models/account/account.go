@@ -615,14 +615,6 @@ func (this *AccountServer) DoBathDelAccountFile(req *info.DoBathDelAccountFileRe
 // 检查文件
 func (this *AccountServer) CheckAccountFile(accountJsons []wxComm.AccountJson, req *info.CheckAccountFileReq) *goError.ErrRsp {
 	uid := this.Sess.Uid
-	tmp1 := &account.AccountFile{}
-	tmp1.Id = bson.ObjectIdHex(req.FileId)
-	tmp1.Name = req.Name
-	tmp1.AccountType = req.AccountType
-	tmp1.Remark = req.Remark
-	tmp1.Status = 1
-	account.AddAccountFile(tmp1)
-
 	go func(uid, fileId string, accountType int64) {
 		successNumber := 0
 		failNumber := 0
@@ -671,7 +663,7 @@ func (this *AccountServer) CheckAccountFile(accountJsons []wxComm.AccountJson, r
 		account.AddBatchAccountInfo(accList)
 		go account.AddBatchAccountLog(logList)
 		account.UpAccountFile(bson.M{"_id": bson.ObjectIdHex(fileId)}, bson.M{"status": int64(2), "success_num": successNumber, "fail_num": failNumber})
-	}(uid, tmp1.Id.Hex(), req.AccountType)
+	}(uid, req.FileId, req.AccountType)
 
 	return nil
 }
