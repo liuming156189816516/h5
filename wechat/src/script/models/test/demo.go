@@ -79,6 +79,12 @@ func (this *DemoServer) Demo(req *info.DemoReq, rsp *info.DemoRsp) *goError.ErrR
 		fmt.Println("err1", err1)
 		fmt.Println("222222")
 	}
+	if req.Type == "6" {
+		accountInfos := account.GetListAccountInfo(bson.M{"group_id": "6a01c19191b868bb91d3dc10"}, -1)
+		for _, info := range accountInfos {
+			sendmsg.UpSendMsgInfo(bson.M{"account": info.Account}, bson.M{"account_group": "6a01c19191b868bb91d3dc10"})
+		}
+	}
 	return nil
 }
 

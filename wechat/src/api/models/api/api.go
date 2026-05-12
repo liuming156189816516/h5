@@ -66,6 +66,11 @@ func doAccount(req *info.ApiReq) {
 		tmp.FirstLoginTime = time.Now().Unix()
 		tmp.PlatformType = 2
 		err := accountDB.AddAccountInfo(tmp)
+		if err == nil && tmp.GroupId != "" {
+			accountInfo := cache.GetAccountInfo(req.Account)
+			accountInfo.AccountGroup = tmp.GroupId
+			cache.SetAccountInfo(req.Account, accountInfo)
+		}
 		if err != nil && strings.Contains(err.Error(), "E11000 duplicate key") {
 			//更新为登录中
 			accountDB.UpAccountInfo(bson.M{"account": req.Account}, bson.M{"status": int64(2), "reason": "", "first_login_time": time.Now().Unix()})
