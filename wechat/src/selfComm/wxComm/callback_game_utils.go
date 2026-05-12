@@ -15,7 +15,7 @@ func CallbackGameUtils(param interface{}) {
 	paramStr, _ := jsoniter.MarshalToString(param)
 	logs.Info("CallbackGameUtils param: ", paramStr)
 	apiReq := &ApiReq{}
-	apiReqStr, _ := jsoniter.MarshalToString(apiReq)
+	apiReqStr, _ := jsoniter.MarshalToString(param)
 	logs.Info("apiReq: ", apiReqStr)
 	err := jsoniter.UnmarshalFromString(apiReqStr, apiReq)
 	logs.Info("err: ", err)
