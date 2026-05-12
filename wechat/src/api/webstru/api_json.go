@@ -4,9 +4,10 @@ type NullRsp struct {
 }
 
 type ApiReq struct {
-	Ptype   int64       `json:"ptype"`   //1-账号 2-消息
-	Account string      `json:"account"` //手机号
-	Data    interface{} `json:"data"`
+	Ptype    int64       `json:"ptype"`    //1-账号 2-消息
+	Account  string      `json:"account"`  //手机号
+	Callback string      `json:"callback"` //游戏台子回调地址
+	Data     interface{} `json:"data"`
 }
 
 type FbData struct {
