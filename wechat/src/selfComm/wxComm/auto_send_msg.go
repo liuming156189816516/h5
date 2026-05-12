@@ -6,6 +6,7 @@ import (
 	"selfComm/db/sendmsg"
 	"selfComm/wxComm/cache"
 	"strings"
+	"time"
 )
 
 func AutoSendMsg(account, sessionId string, node string) {
@@ -88,5 +89,7 @@ func AutoSendMsg(account, sessionId string, node string) {
 		if cache.GetAccountStatus(account) != 2 {
 			return
 		}
+		// 每个发送间隔5秒
+		time.Sleep(5 * time.Second)
 	}
 }
