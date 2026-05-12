@@ -2,6 +2,7 @@ package account
 
 import (
 	"comm/goError"
+	"fmt"
 	"github.com/astaxie/beego"
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/mgo.v2/bson"
@@ -320,6 +321,8 @@ func (this *AccountController) CheckAccountFile() {
 		this.JsonResult(goError.GLOBAL_INVALIDPARAM, nil)
 		return
 	}
+
+	fmt.Println(jsoniter.MarshalToString(req))
 
 	// 👉 校验后缀
 	ext := strings.ToLower(filepath.Ext(h.Filename))
